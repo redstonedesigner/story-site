@@ -8,6 +8,7 @@ class User(Base):
     username = Column(String(32), nullable=False)
     email = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
+    role = Column(Integer, default=0, nullable=False)
 
     def __init__(self, username=None, email=None, password=None):
         self.username = username
