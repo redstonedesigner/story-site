@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | Register</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition register-page">
+<div class="register-box">
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <a href="/" class="h1">Story Site</a>
+    </div>
+    <div class="card-body">
+      <p class="login-box-msg">Register a new membership</p>
+
+      <form id="registerform">
+        <div class="input-group mb-3">
+          <input id="username" type="text" class="form-control" placeholder="Username" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input id="email" type="email" class="form-control" placeholder="Email" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input id="password" type="password" class="form-control" placeholder="Password" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input id="password2" type="password" class="form-control" placeholder="Retype password" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <a href="/auth/login" class="text-center">I already have a membership</a>
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+
+    </div>
+    <!-- /.form-box -->
+  </div><!-- /.card -->
+</div>
+<!-- /.register-box -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- Login Script -->
+<script>
+    $(document).ready(function() {
+
+    $('#registerform').submit(function() {
+        $.ajax({
+            type: "POST",
+            url: '/auth/register-process',
+            data: {
+                email: $("#email").val(),
+                password: $("#password").val(),
+                password2: $("#password2").val(),
+                username: $("#username").val()
+            },
+            success: function(data)
+            {
+                const json_result = JSON.parse(data)
+                if (json_result['success'] === 'true') {
+                    window.location.replace('/auth/login');
+                }
+                else {
+                    let valid_fields = ['password', 'username', 'email']
+                    for (const jsonResultElementKey in json_result['errors']) {
+                        const json_data = json_result['errors'][jsonResultElementKey]
+                        const field = json_data['field'];
+                        const error = json_data['error'];
+                        const field_selector = $('#' + field)
+                        field_selector.addClass('is-invalid')
+                        field_selector.removeClass('is-valid')
+                        if (field === "password") {
+                            password2 = $('#password2')
+                            password2.addClass('is-invalid')
+                            password2.removeClass('is-valid')
+                        }
+                        toastr.error(error)
+                        const index = valid_fields.indexOf(field);
+                        if (index !== -1) {
+                          valid_fields.splice(index, 1);
+                        }
+                    }
+                    for (const validFieldsKey in valid_fields) {
+                        const field_selector = $('#' + valid_fields[validFieldsKey])
+                        field_selector.addClass('is-valid')
+                        field_selector.removeClass('is-invalid')
+                        if (valid_fields[validFieldsKey] === "password") {
+                            password2 = $('#password2')
+                            password2.addClass('is-valid')
+                            password2.removeClass('is-invalid')
+                        }
+                    }
+                }
+            }
+        });
+        //this is mandatory other wise your from will be submitted.
+        return false;
+    });
+
+});
+</script>
+</body>
+</html>
