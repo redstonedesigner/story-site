@@ -38,6 +38,34 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 		<li class="nav-item">
+            <a href="/categories/" class="nav-link">
+              <i class="nav-icon fas fa-swatchbook"></i>
+              <p>
+                Categories
+              </p>
+            </a>
+          </li>
+			{% if g.user.role == 2 %}
+			<li class="nav-header">ADMINISTRATION</li>
+				<li class="nav-item">
+            <a href="/categories/admin" class="nav-link">
+              <i class="nav-icon fas fa-database"></i>
+              <p>
+                Categories
+              </p>
+            </a>
+          </li>
+				<li class="nav-item">
+            <a href="/users/admin" class="nav-link">
+              <i class="nav-icon fas fa-users-cog"></i>
+              <p>
+                Users
+              </p>
+            </a>
+          </li>
+			{% endif %}
+			<li class="nav-header">USER MENU</li>
+			<li class="nav-item">
             <a href="/auth/logout" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>

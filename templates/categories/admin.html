@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | Categories</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Categories</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+				<li class="breadcrumb-item"><a href="/categories/">Categories</a></li>
+				<li class="breadcrumb-item active">Admin</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Available Categories</h3>
+			<div class="card-tools">
+				<button type="button" class="btn btn-tool" data-toggle="modal" data-target="#create-new-modal">
+                  <i class="fas fa-plus"></i>
+                </button>
+				<button type="button" class="btn btn-tool" onclick="refresh()">
+                    <i class="fas fa-sync-alt"></i>
+				</button>
+				<button type="button" class="btn btn-tool" data-card-widget="maximize">
+					<i class="fas fa-expand"></i>
+				</button>
+				<button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+				</button>
+			</div>
+        </div>
+        <div class="card-body">
+			<table class="table table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Content Warning</th>
+                      <th>URL</th>
+					  <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="categories">
+				  </tbody>
+			</table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+	<div class="modal fade" id="create-new-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Create New Category</h4>
+            </div>
+            <div class="modal-body">
+              <form id="create-category">
+				<div class="form-group">
+                        <label for="new_category_name">Name</label>
+                        <input id="new_category_name" type="text" class="form-control" placeholder="Science Fiction">
+                      </div>
+				<div class="form-group">
+                        <label for="new_url_slug">URL slug</label>
+                        <input id="new_url_slug" type="text" class="form-control" placeholder="Enter ...">
+                      </div>
+				<div class="form-group">
+                        <label for="new_content_warning">Content Warning</label>
+                        <select class="form-control" id="new_content_warning">
+                          <option selected value="0">All Ages</option>
+                          <option value="1">Teens and Above</option>
+                          <option value="2">Adults Only</option>
+						</select>
+				</div>
+				  <div class="form-group">
+                        <label for="new_description">Description</label>
+                        <textarea class="form-control" rows="3" placeholder="Enter ..." id="new_description"></textarea>
+                      </div>
+			  </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="create_new_category()">Create New</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+	<div class="modal fade" id="edit-existing-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Category</h4>
+            </div>
+            <div class="modal-body">
+              <form id="edit-category">
+				<div class="form-group">
+                        <label for="edit_category_name">Name</label>
+                        <input id="edit_category_name" type="text" class="form-control" placeholder="Science Fiction">
+                      </div>
+				<div class="form-group">
+                        <label for="edit_url_slug">URL slug</label>
+                        <input id="edit_url_slug" type="text" class="form-control" placeholder="Enter ...">
+                      </div>
+				<div class="form-group">
+                        <label for="edit_content_warning">Content Warning</label>
+                        <select class="form-control" id="edit_content_warning">
+                          <option id="cw_0" value="0">All Ages</option>
+                          <option id="cw_1" value="1">Teens and Above</option>
+                          <option id="cw_2" value="2">Adults Only</option>
+						</select>
+				</div>
+				  <div class="form-group">
+                        <label for="edit_description">Description</label>
+                        <textarea class="form-control" rows="3" placeholder="Enter ..." id="edit_description"></textarea>
+                      </div>
+			  </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button id="edit_confirm_button" type="button" class="btn btn-primary">Edit</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX Script -->
+<script>
+	const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+	const cw = {
+		0: "All Ages",
+		1: "Teens and Above",
+		2: "Adults Only"
+	}
+	const cw_colours = {
+		0: "bg-success",
+		1: "bg-warning",
+		2: "bg-danger"
+	}
+	function refresh() {
+		const card = $('.card')
+		card.append(`
+		<div class="overlay">
+                <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+              </div>
+		`)
+		$.get("/categories/all", function(data) {
+			const selector = $('#categories');
+			html_string = ""
+			for (const jsonDataKey in data['categories']) {
+				const category = data['categories'][jsonDataKey]
+				const content_warning = category['content_warning']
+				html_string += `<tr data-widget="expandable-table" aria-expanded="true">
+				<td>${category['id']}</td>
+				<td>${category['name']}</td>
+				<td><span class="badge ${cw_colours[content_warning]}">${cw[content_warning]}</td>
+				<td><a href="/categories/${category['url_slug']}">/categories/${category['url_slug']}</a></td>
+				<td>
+					<div class="row">
+					<button type="button" onclick="delete_category(${category['id']})" class="btn btn-outline-danger col-md-4 offset-md-1"><i class="fa fa-trash"></i> Delete</button>
+					<button type="button" onclick="show_edit_form(${category['id']})" class="btn btn-outline-warning col-md-4 offset-md-2"><i class="fa fa-pencil-alt"></i> Edit</button>
+					</div>
+				</td>
+				</tr>
+				<tr class="expandable-body">
+				<td colspan=5>
+				<p>${category['description']}</p>
+				</td>
+				</tr>
+				`
+				selector.html(html_string)
+			}
+			if(html_string === "") {
+				selector.html(`<tr><td colspan=5 style='text-align: center'>No entries found in database.</td></tr>`)
+			}
+		})
+		$('div').remove('.overlay')
+	}
+	function delete_category(id) {
+		$.ajax({
+            type: "DELETE",
+            url: '/categories/delete',
+            data: {
+                category: id
+            },
+            success: function(data)
+            {
+                refresh()
+				Toast.fire({
+					icon: 'success',
+					title: 'Category deleted successfully.'
+            	})
+            }
+        });
+	}
+	function create_new_category() {
+		new_description = $('#new_description')
+		new_name = $('#new_category_name')
+		new_content_warning = $('#new_content_warning')
+		new_url_slug = $('#new_url_slug')
+		$.ajax({
+            type: "PUT",
+            url: '/categories/create',
+            data: {
+                description: new_description.val(),
+				name: new_name.val(),
+				content_warning: new_content_warning.val(),
+				url_slug: new_url_slug.val()
+            },
+            success: function(data)
+            {
+                if(data['success'] === true) {
+                	$('#create-new-modal').modal('toggle')
+					new_description.val('')
+					new_description.removeClass('is-valid').removeClass('is-invalid')
+					new_name.val('')
+					new_name.removeClass('is-valid').removeClass('is-invalid')
+					new_content_warning.val('0')
+					new_content_warning.removeClass('is-valid').removeClass('is-invalid')
+					new_url_slug.val('')
+					new_url_slug.removeClass('is-valid').removeClass('is-invalid')
+                	Toast.fire({
+						icon: 'success',
+						title: 'Category created successfully.'
+            		})
+					refresh()
+                } else {
+                	valid_fields = [new_description, new_name, new_content_warning, new_url_slug]
+					const errors = data['errors']
+					for (const errorKey in errors) {
+						if(errors[errorKey]['field'] === 'name') {
+							const index = valid_fields.indexOf(new_name);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_name.addClass('is-invalid')
+							new_name.removeClass('is-valid')
+							Toast.fire({
+								icon: 'error',
+								title: 'Category name already in use.'
+							})
+						} else if(errors[errorKey]['field'] === 'url_slug') {
+							const index = valid_fields.indexOf(new_url_slug);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_url_slug.addClass('is-invalid')
+							new_url_slug.removeClass('is-valid')
+							Toast.fire({
+								icon: 'error',
+								title: 'URL slug already in use.'
+							})
+						}
+					}
+					for (const validFieldsKey in valid_fields) {
+						valid_fields[validFieldsKey].addClass('is-valid')
+						valid_fields[validFieldsKey].removeClass('is-invalid')
+					}
+				}
+            }
+        });
+	}
+	$(document).ready(function() {
+		refresh()
+	})
+	function show_edit_form(id) {
+		$.get("/categories/id/"+id, function(data) {
+			$('#edit_category_name').val(data['name'])
+			$('#edit_description').val(data['description'])
+			$('#edit_url_slug').val(data['url_slug'])
+			$('#edit_content_warning').val(data['content_warning'])
+			$('#edit_confirm_button').attr('onclick', "process_edit("+data['id']+")")
+			$('#edit-existing-modal').modal('toggle')
+		})
+	}
+	function process_edit(id) {
+		new_description = $('#edit_description')
+		new_name = $('#edit_category_name')
+		new_content_warning = $('#edit_content_warning')
+		new_url_slug = $('#edit_url_slug')
+		$.ajax({
+            type: "PATCH",
+            url: '/categories/edit/'+id,
+            data: {
+                description: new_description.val(),
+				name: new_name.val(),
+				content_warning: new_content_warning.val(),
+				url_slug: new_url_slug.val()
+            },
+            success: function(data)
+            {
+                if(data['success'] === true) {
+                	$('#edit-existing-modal').modal('toggle')
+					new_description.val('')
+					new_description.removeClass('is-valid').removeClass('is-invalid')
+					new_name.val('')
+					new_name.removeClass('is-valid').removeClass('is-invalid')
+					new_content_warning.val('0')
+					new_content_warning.removeClass('is-valid').removeClass('is-invalid')
+					new_url_slug.val('')
+					new_url_slug.removeClass('is-valid').removeClass('is-invalid')
+                	$('#edit_confirm_button').removeAttr('onclick')
+					Toast.fire({
+						icon: 'success',
+						title: 'Category edited successfully.'
+            		})
+					refresh()
+                } else {
+                	valid_fields = [new_description, new_name, new_content_warning, new_url_slug]
+					const errors = data['errors']
+					for (const errorKey in errors) {
+						if(errors[errorKey]['field'] === 'name') {
+							const index = valid_fields.indexOf(new_name);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_name.addClass('is-invalid')
+							new_name.removeClass('is-valid')
+							Toast.fire({
+								icon: 'error',
+								title: 'Category name already in use.'
+							})
+						} else if(errors[errorKey]['field'] === 'url_slug') {
+							const index = valid_fields.indexOf(new_url_slug);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_url_slug.addClass('is-invalid')
+							new_url_slug.removeClass('is-valid')
+							Toast.fire({
+								icon: 'error',
+								title: 'URL slug already in use.'
+							})
+						}
+					}
+					for (const validFieldsKey in valid_fields) {
+						valid_fields[validFieldsKey].addClass('is-valid')
+						valid_fields[validFieldsKey].removeClass('is-invalid')
+					}
+				}
+            }
+        });
+	}
+</script>
+</body>
+</html>

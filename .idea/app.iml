@@ -14,6 +14,7 @@
       <list>
         <option value="$MODULE_DIR$/templates" />
         <option value="$MODULE_DIR$/templates/auth" />
+        <option value="$MODULE_DIR$/templates/categories" />
       </list>
     </option>
   </component>
