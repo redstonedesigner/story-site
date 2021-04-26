@@ -14,7 +14,7 @@ categories_bp = Blueprint(
 @categories_bp.route('/')
 @login_required
 def list_view():
-	return render_template('list_multiple.html', g=g)
+	return render_template('cat_list_multiple.html', g=g)
 
 
 @categories_bp.route('/all')
@@ -39,7 +39,7 @@ def list_process():
 def admin_view():
 	if g.user.role != 2:
 		return redirect('/')
-	return render_template('admin.html')
+	return render_template('cat_admin.html')
 
 
 @categories_bp.route('/delete', methods=['DELETE'])
@@ -143,4 +143,4 @@ def single_view(slug):
 	c = Category.query.filter(Category.url_slug == slug).first()
 	if c is None:
 		return abort(404)
-	return render_template('single.html', g=g, c=c)
+	return render_template('cat_single.html', g=g, c=c)
