@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Story Site | {{ c.name }}</title>
+  <title>Story Site | Categories</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -24,13 +24,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 id="category_name">{{ c.name }}</h1>
+            <h1>Categories</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
 				<li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="/categories/">Categories</a></li>
-                <li class="breadcrumb-item active" id="category_name">{{ c.name }}</li>
+				<li class="breadcrumb-item active">Categories</li>
             </ol>
           </div>
         </div>
@@ -43,9 +42,9 @@
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Stories in category {{ c.name }}</h3>
+          <h3 class="card-title">Available Categories</h3>
         </div>
-        <div class="card-body" id="stories">
+        <div class="card-body" id="categories">
         </div>
         <!-- /.card-body -->
       </div>
@@ -67,8 +66,44 @@
 <script src="/dist/js/adminlte.min.js"></script>
 <!-- AJAX Script -->
 <script>
-	$(document).ready(function() {
-
+	$(window).on('load', function() {
+		$.get("/categories/all", function(data) {
+			const selector = $('#categories');
+			html_string = "<div class='row'>"
+			let contains = 0;
+			for (const jsonDataKey in data['categories']) {
+				const cw = {
+					0: "All Ages",
+					1: "Teens and Above",
+					2: "Adults Only"
+				}
+				const cw_colours = {
+					0: "bg-success",
+					1: "bg-warning",
+					2: "bg-danger"
+				}
+				const content_warning = data['categories'][jsonDataKey]['content_warning']
+				html_string += `<div class="col-sm-4">
+                    <a href='/categories/${data['categories'][jsonDataKey]['url_slug']}'><div class="position-relative p-3 bg-gray" style="height: 180px">
+                      <div class="ribbon-wrapper ribbon-lg">
+                        <div class="ribbon ${cw_colours[content_warning]} text-lg">
+                          ${cw[content_warning]}
+                        </div>
+                      </div>
+                      <h3>${data['categories'][jsonDataKey]['name']}</h3><br>
+					  ${data['categories'][jsonDataKey]['description']}
+                    </div></a>
+                  </div>
+				`
+				contains += 1
+				if(contains % 3 === 0) {
+					html_string += `</div>
+					<div class="row mt-4">
+					`
+				}
+			selector.html(html_string)
+			}
+		})
 	})
 </script>
 </body>
