@@ -66,6 +66,9 @@ def register_process():
     u_username = User.query.filter(User.username == username).first()
     if u_username is not None:
         errors.append({"field": "username", "error": "Username already in use!"})
+    if username in ['admin', 'list', 'mod', 'moderator', 'administrator', 'create', 'edit', 'id', 'update', 'get',
+                    'view']:
+        errors.append({"field": "username", "error": "Username reserved due to system limitation."})
     if password != password2:
         errors.append({"field": "password", "error": "Passwords do not match!"})
     if errors:
