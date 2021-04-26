@@ -32,5 +32,16 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
+@app.errorhandler(404)
+@login_required
+def error_404_handler(e):
+    return render_template('404.html', g=g)
+
+
+@app.errorhandler(500)
+@login_required
+def handle_500_error(e):
+    return render_template('500.html', g=g)
+
 if __name__ == '__main__':
     app.run()
