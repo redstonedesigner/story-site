@@ -135,3 +135,12 @@ def edit_process(id):
 		c.content_warning = content_warning
 		db_session.commit()
 		return jsonify(success=True)
+
+
+@categories_bp.route('/<string:slug>')
+@login_required
+def single_view(slug):
+	c = Category.query.filter(Category.url_slug == slug).first()
+	if c is None:
+		return abort(404)
+	return render_template('single.html', g=g, c=c)
