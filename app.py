@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, render_template, g
 from database import db_session
-from views import auth, category
+from views import auth, category, user
 from checks import login_required
 
 app = Flask(__name__)
@@ -25,6 +25,7 @@ def send_from_dist(path):
 
 app.register_blueprint(auth.auth_bp)
 app.register_blueprint(category.categories_bp)
+app.register_blueprint(user.users_bp)
 
 
 @app.teardown_appcontext
