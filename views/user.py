@@ -137,7 +137,6 @@ def get_by_id_process(id):
 def edit_process(id):
 	username = request.form.get('username')
 	email = request.form.get('email')
-	password = request.form.get('password')
 	errors = []
 	u_name_check = User.query.filter(User.username == username).first()
 	if u_name_check is not None:
