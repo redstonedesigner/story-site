@@ -17,4 +17,4 @@ class Category(Base):
 		self.content_warning = content_warning
 
 	def __repr__(self):
-		return '<User %r>' % self.username
+		return '<Category %r>' % self.name

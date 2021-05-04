@@ -20,4 +20,4 @@ class Story(Base):
 			self.categories.append(i.id)
 
 	def __repr__(self):
-		return '<User %r>' % self.username
+		return '<Story %r>' % self.title
