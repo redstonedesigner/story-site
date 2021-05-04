@@ -62,18 +62,30 @@ def admin_create():
 	description = request.form.get('description')
 	content_warning = request.form.get('content_warning')
 	errors = []
-	c_name_check = Category.query.filter(Category.name == name).first()
-	if c_name_check is not None:
+	if name == "":
 		errors.append({
 			"field": "name",
-			"error": "That name is already in use."
+			"error": "Category name cannot be blank."
 		})
-	c_slug_check = Category.query.filter(Category.url_slug == url_slug).first()
-	if c_slug_check is not None:
+	else:
+		c_name_check = Category.query.filter(Category.name == name).first()
+		if c_name_check is not None:
+			errors.append({
+				"field": "name",
+				"error": "That name is already in use."
+			})
+	if url_slug == "":
 		errors.append({
 			"field": "url_slug",
-			"error": "That URL slug is already in use."
+			"error": "URL slug cannot be blank."
 		})
+	else:
+		c_slug_check = Category.query.filter(Category.url_slug == url_slug).first()
+		if c_slug_check is not None:
+			errors.append({
+				"field": "url_slug",
+				"error": "That URL slug is already in use."
+			})
 	if errors:
 		return jsonify(errors=errors, success=False)
 	else:
@@ -111,20 +123,32 @@ def edit_process(id):
 	description = request.form.get('description')
 	content_warning = request.form.get('content_warning')
 	errors = []
-	c_name_check = Category.query.filter(Category.name == name).first()
-	if c_name_check is not None:
-		if c_name_check.id != int(id):
-			errors.append({
-				"field": "name",
-				"error": "That name is already in use."
-			})
-	c_slug_check = Category.query.filter(Category.url_slug == url_slug).first()
-	if c_slug_check is not None:
-		if c_slug_check.id != int(id):
-			errors.append({
-				"field": "url_slug",
-				"error": "That URL slug is already in use."
-			})
+	if name == "":
+		errors.append({
+			"field": "name",
+			"error": "Category name cannot be blank."
+		})
+	else:
+		c_name_check = Category.query.filter(Category.name == name).first()
+		if c_name_check is not None:
+			if c_name_check.name != name:
+				errors.append({
+					"field": "name",
+					"error": "That name is already in use."
+				})
+	if url_slug == "":
+		errors.append({
+			"field": "url_slug",
+			"error": "URL slug cannot be blank."
+		})
+	else:
+		c_slug_check = Category.query.filter(Category.url_slug == url_slug).first()
+		if c_slug_check is not None:
+			if c_slug_check.url_slug != url_slug:
+				errors.append({
+					"field": "url_slug",
+					"error": "That URL slug is already in use."
+				})
 	if errors:
 		return jsonify(errors=errors, success=False)
 	else:

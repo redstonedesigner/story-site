@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, g, jsonify, redirect, request, abo
 from models import User
 from checks import login_required
 from database import db_session
+from hashlib import sha512
 
 users_bp = Blueprint(
 	'users',
@@ -61,9 +62,9 @@ def admin_view():
 def admin_delete():
 	if g.user.role != 2:
 		return redirect('/')
-	category_id = request.form['category']
-	category = Category.query.filter(Category.id == category_id).first()
-	db_session.delete(category)
+	user_id = request.form['user']
+	user = User.query.filter(User.id == user_id).first()
+	db_session.delete(user)
 	db_session.commit()
 	return "Success"
 
@@ -71,33 +72,48 @@ def admin_delete():
 @users_bp.route('/create', methods=['PUT'])
 @login_required
 def admin_create():
-	name = request.form.get('name')
-	url_slug = request.form.get('url_slug')
-	description = request.form.get('description')
-	content_warning = request.form.get('content_warning')
+	username = request.form.get('username')
+	email = request.form.get('email')
+	password = request.form.get('password')
 	errors = []
-	c_name_check = Category.query.filter(Category.name == name).first()
-	if c_name_check is not None:
+	if username == "":
 		errors.append({
-			"field": "name",
-			"error": "That name is already in use."
+			"field": "username",
+			"error": "Username cannot be blank."
 		})
-	c_slug_check = Category.query.filter(Category.url_slug == url_slug).first()
-	if c_slug_check is not None:
+	else:
+		u_name_check = User.query.filter(User.username == username).first()
+		if u_name_check is not None:
+			errors.append({
+				"field": "username",
+				"error": "That name is already in use."
+			})
+	if email == "":
 		errors.append({
-			"field": "url_slug",
-			"error": "That URL slug is already in use."
+			"field": "email",
+			"error": "Email cannot be blank."
+		})
+	else:
+		u_email_check = User.query.filter(User.email == email).first()
+		if u_email_check is not None:
+			errors.append({
+				"field": "email",
+				"error": "That email is already in use."
+			})
+	if password == "":
+		errors.append({
+			"field": "password",
+			"error": "Password cannot be blank."
 		})
 	if errors:
 		return jsonify(errors=errors, success=False)
 	else:
-		c = Category(
-			name=name,
-			description=description,
-			url_slug=url_slug,
-			content_warning=content_warning
+		u = User(
+			username=username,
+			email=email,
+			password=sha512(password.encode('utf-8')).hexdigest()
 		)
-		db_session.add(c)
+		db_session.add(u)
 		db_session.commit()
 		return jsonify(success=True)
 
@@ -105,48 +121,44 @@ def admin_create():
 @users_bp.route('/id/<string:id>')
 @login_required
 def get_by_id_process(id):
-	c = Category.query.filter(Category.id == id).first()
-	if c is None:
+	u = User.query.filter(User.id == id).first()
+	if u is None:
 		return abort(404)
 	return jsonify(
-		name=c.name,
-		content_warning=c.content_warning,
-		id=c.id,
-		description=c.description,
-		url_slug=c.url_slug
+		username=u.username,
+		email=u.email,
+		id=u.id,
+		role=u.role
 	)
 
 
 @users_bp.route('/edit/<string:id>', methods=['PATCH'])
 @login_required
 def edit_process(id):
-	name = request.form.get('name')
-	url_slug = request.form.get('url_slug')
-	description = request.form.get('description')
-	content_warning = request.form.get('content_warning')
+	username = request.form.get('username')
+	email = request.form.get('email')
+	password = request.form.get('password')
 	errors = []
-	c_name_check = Category.query.filter(Category.name == name).first()
-	if c_name_check is not None:
-		if c_name_check.id != int(id):
+	u_name_check = User.query.filter(User.username == username).first()
+	if u_name_check is not None:
+		if u_name_check.username != username:
 			errors.append({
-				"field": "name",
+				"field": "username",
 				"error": "That name is already in use."
 			})
-	c_slug_check = Category.query.filter(Category.url_slug == url_slug).first()
-	if c_slug_check is not None:
-		if c_slug_check.id != int(id):
+	u_email_check = User.query.filter(User.email == email).first()
+	if u_email_check is not None:
+		if u_email_check.email != email:
 			errors.append({
-				"field": "url_slug",
-				"error": "That URL slug is already in use."
+				"field": "email",
+				"error": "That email is already in use."
 			})
 	if errors:
 		return jsonify(errors=errors, success=False)
 	else:
-		c = Category.query.filter(Category.id == id).first()
-		c.name = name
-		c.url_slug = url_slug
-		c.description = description
-		c.content_warning = content_warning
+		u = User.query.filter(User.id == id).first()
+		u.username = username
+		u.email = email
 		db_session.commit()
 		return jsonify(success=True)
 
@@ -158,3 +170,21 @@ def single_view(username):
 	if u is None:
 		return abort(404)
 	return render_template('user_single.html', g=g, u=u)
+
+
+@users_bp.route('/role/<int:id>', methods=["PATCH"])
+@login_required
+def set_role_process(id):
+	u = User.query.filter(User.id == id).first()
+	password = request.form.get('password')
+	hashed_pw = sha512(password.encode('utf-8')).hexdigest()
+	if g.user.password != hashed_pw:
+		errors = [{
+			"field": "password",
+			"error": "Administrator password is incorrect."
+		}]
+		return jsonify(success=False, errors=errors)
+	role = request.form.get('role')
+	u.role = role
+	db_session.commit()
+	return jsonify(success=True)

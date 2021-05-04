@@ -69,13 +69,15 @@
 	$(window).on('load', function() {
 		$.get("/categories/all", function(data) {
 			const selector = $('#categories');
-			html_string = "<div class='row'>"
-			let contains = 0;
+			let row = 0
+			selector.append("<div class='row' id='set-"+row+"'>")
+			let row_selector = $('#set-'+row)
+            let contains = 0;
 			for (const jsonDataKey in data['categories']) {
 				const cw = {
 					0: "All Ages",
-					1: "Teens and Above",
-					2: "Adults Only"
+					1: "Teens",
+					2: "Adults"
 				}
 				const cw_colours = {
 					0: "bg-success",
@@ -83,7 +85,7 @@
 					2: "bg-danger"
 				}
 				const content_warning = data['categories'][jsonDataKey]['content_warning']
-				html_string += `<div class="col-sm-4">
+				row_selector.append(`<div class="col-sm-4">
                     <a href='/categories/${data['categories'][jsonDataKey]['url_slug']}'><div class="position-relative p-3 bg-gray" style="height: 180px">
                       <div class="ribbon-wrapper ribbon-lg">
                         <div class="ribbon ${cw_colours[content_warning]} text-lg">
@@ -94,14 +96,16 @@
 					  ${data['categories'][jsonDataKey]['description']}
                     </div></a>
                   </div>
-				`
+				`)
 				contains += 1
 				if(contains % 3 === 0) {
-					html_string += `</div>
-					<div class="row mt-4">
-					`
+				    row += 1
+					selector.append(`</div>
+					<div class="row mt-4" id="set-`+row+`">
+					`)
+                    row_selector = $('#set-'+row)
+                    console.log("New row selector: "+row)
 				}
-			selector.html(html_string)
 			}
 		})
 	})

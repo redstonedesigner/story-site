@@ -56,9 +56,6 @@
 				<button type="button" class="btn btn-tool" data-card-widget="maximize">
 					<i class="fas fa-expand"></i>
 				</button>
-				<button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-				</button>
 			</div>
         </div>
         <div class="card-body">
@@ -194,6 +191,9 @@
 		1: "bg-warning",
 		2: "bg-danger"
 	}
+	function refreshFinish() {
+        $('div').remove('.overlay')
+    }
 	function refresh() {
 		const card = $('.card')
 		card.append(`
@@ -231,7 +231,7 @@
 				selector.html(`<tr><td colspan=5 style='text-align: center'>No entries found in database.</td></tr>`)
 			}
 		})
-		$('div').remove('.overlay')
+        refreshFinish()
 	}
 	function delete_category(id) {
 		$.ajax({
@@ -292,10 +292,6 @@
 							}
 							new_name.addClass('is-invalid')
 							new_name.removeClass('is-valid')
-							Toast.fire({
-								icon: 'error',
-								title: 'Category name already in use.'
-							})
 						} else if(errors[errorKey]['field'] === 'url_slug') {
 							const index = valid_fields.indexOf(new_url_slug);
 							if (index !== -1) {
@@ -303,11 +299,10 @@
 							}
 							new_url_slug.addClass('is-invalid')
 							new_url_slug.removeClass('is-valid')
-							Toast.fire({
-								icon: 'error',
-								title: 'URL slug already in use.'
-							})
-						}
+						Toast.fire({
+                            icon: 'error',
+                            title: errors[errorKey]['error']
+                        })
 					}
 					for (const validFieldsKey in valid_fields) {
 						valid_fields[validFieldsKey].addClass('is-valid')
@@ -315,8 +310,8 @@
 					}
 				}
             }
-        });
-	}
+        }
+	})}
 	$(window).on('load', function() {
 		refresh()
 	})
@@ -373,10 +368,6 @@
 							}
 							new_name.addClass('is-invalid')
 							new_name.removeClass('is-valid')
-							Toast.fire({
-								icon: 'error',
-								title: 'Category name already in use.'
-							})
 						} else if(errors[errorKey]['field'] === 'url_slug') {
 							const index = valid_fields.indexOf(new_url_slug);
 							if (index !== -1) {
@@ -384,11 +375,11 @@
 							}
 							new_url_slug.addClass('is-invalid')
 							new_url_slug.removeClass('is-valid')
-							Toast.fire({
-								icon: 'error',
-								title: 'URL slug already in use.'
-							})
 						}
+						Toast.fire({
+                            icon: 'error',
+                            title: errors[errorKey]['error']
+                        })
 					}
 					for (const validFieldsKey in valid_fields) {
 						valid_fields[validFieldsKey].addClass('is-valid')
@@ -397,7 +388,7 @@
 				}
             }
         });
-	}
+    }
 </script>
 </body>
 </html>

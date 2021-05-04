@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | User List</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>User List</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+				<li class="breadcrumb-item active">Users</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Registered Users</h3>
+            <div class="card-tools">
+				<button type="button" class="btn btn-tool" data-toggle="modal" data-target="#create-new-modal">
+                  <i class="fas fa-plus"></i>
+                </button>
+				<button type="button" class="btn btn-tool" onclick="refresh()">
+                    <i class="fas fa-sync-alt"></i>
+				</button>
+				<button type="button" class="btn btn-tool" data-card-widget="maximize">
+					<i class="fas fa-expand"></i>
+				</button>
+			</div>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 10%">ID</th>
+                        <th style="width: 20%">Username</th>
+                        <th style="width: 15%">Role</th>
+                        <th style="width: 35%">Email Address</th>
+                        <th style="width: 20%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users">
+
+                </tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+        <div class="overlay">
+            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+    <div class="modal fade" id="create-new-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Create New User</h4>
+            </div>
+            <div class="modal-body">
+              <form id="create-user">
+				<div class="form-group">
+                        <label for="new_username">Username</label>
+                        <input id="new_username" type="text" class="form-control" placeholder="example" required>
+                      </div>
+				<div class="form-group">
+                        <label for="new_email">Email</label>
+                        <input id="new_email" type="text" class="form-control" placeholder="Enter ..." required>
+                      </div>
+                  <div class="form-group">
+                        <label for="new_password">Password</label>
+                        <input id="new_password" type="password" class="form-control" placeholder="Enter ..." required>
+                      </div>
+			  </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" onclick="create_new_user()">Create New</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+	<div class="modal fade" id="edit-existing-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit User</h4>
+            </div>
+            <div class="modal-body">
+              <form id="edit-user">
+				<div class="form-group">
+                        <label for="edit_username">Username</label>
+                        <input id="edit_username" type="text" class="form-control" placeholder="Enter...">
+                      </div>
+				<div class="form-group">
+                        <label for="edit_email">Email</label>
+                        <input id="edit_email" type="text" class="form-control" placeholder="Enter ...">
+                      </div>
+			  </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button id="edit_confirm_button" type="button" class="btn btn-primary">Edit</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+    <div class="modal fade" id="adjust-role-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Edit Role</h4>
+            </div>
+            <div class="modal-body">
+              <form id="edit-user">
+				<div class="form-group">
+                        <label for="admin_pw">Password</label>
+                        <input id="admin_pw" type="password" class="form-control" placeholder="Enter your password">
+                      </div>
+				<div class="form-group">
+                        <label for="role">Role</label>
+                        <select id="role" class="form-control">
+                            <option value="0">User</option>
+                            <option value="1">Moderator</option>
+                            <option value="2">Administrator</option>
+                        </select>
+                      </div>
+			  </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button id="role_confirm_button" type="button" class="btn btn-primary">Edit</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX Script -->
+<script>
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+    function refreshFinish() {
+        $('[data-toggle="tooltip"]').tooltip()
+        $('div').remove('.overlay')
+    }
+    function refresh() {
+        $('.card').append(`<div class="overlay">
+            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>`)
+        $.get("/users/admin-all", function(data) {
+			const selector = $('#users');
+			let html_string = ""
+			for (const jsonDataKey in data['users']) {
+				const roles = {
+					0: "User",
+					1: "Moderator",
+					2: "Administrator"
+				}
+				const user = data['users'][jsonDataKey]
+				const role = user['role']
+                let buttons = `<a href="/users/${user['username']}"><button class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="top" title="View profile"><i class="fas fa-eye"></i></button></a>
+                    <button class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="top" title="Edit this user" onclick="show_edit_form(${user['id']})"><i class="fas fa-pencil-alt"></i></button>`
+                if(user['id'] !== 1) {
+                    buttons += `
+                    <button class="btn btn-xs btn-danger" data-toggle="tooltip" data-placement="top" title="Delete this user" onclick="delete_user(${user['id']})"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Change this user's role" onclick="show_role_form(${user['id']})"><i class="fas fa-adjust"></i></button>`
+                }
+                html_string += `<tr>
+                <td>${user['id']}</td>
+                <td>${user['username']}</td>
+                <td>${roles[role]}</td>
+                <td>${user['email']}</td>
+                <td>
+                    ${buttons}
+                </td>
+                </tr>
+				`
+			}
+            selector.html(html_string)
+		})
+        refreshFinish()
+    }
+	function delete_user(id) {
+		$.ajax({
+            type: "DELETE",
+            url: '/users/delete',
+            data: {
+                user: id
+            },
+            success: function(data)
+            {
+                refresh()
+				Toast.fire({
+					icon: 'success',
+					title: 'User deleted successfully.'
+            	})
+            }
+        });
+	}
+	function create_new_user() {
+		new_username = $('#new_username')
+		new_email = $('#new_email')
+		new_password = $('#new_password')
+		$.ajax({
+            type: "PUT",
+            url: '/users/create',
+            data: {
+                username: new_username.val(),
+				email: new_email.val(),
+				password: new_password.val()
+            },
+            success: function(data)
+            {
+                if(data['success'] === true) {
+                	$('#create-new-modal').modal('toggle')
+					new_username.val('')
+					new_username.removeClass('is-valid').removeClass('is-invalid')
+					new_email.val('')
+					new_email.removeClass('is-valid').removeClass('is-invalid')
+					new_password.val('')
+					new_password.removeClass('is-valid').removeClass('is-invalid')
+                	Toast.fire({
+						icon: 'success',
+						title: 'User created successfully.'
+            		})
+					refresh()
+                } else {
+                	valid_fields = [new_username, new_email, new_password]
+					const errors = data['errors']
+                    console.log(errors)
+					for (const errorKey in errors) {
+						if(errors[errorKey]['field'] === 'username') {
+							const index = valid_fields.indexOf(new_username);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_username.addClass('is-invalid')
+							new_username.removeClass('is-valid')
+						} else if(errors[errorKey]['field'] === 'email') {
+							const index = valid_fields.indexOf(new_email);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_email.addClass('is-invalid')
+							new_email.removeClass('is-valid')
+						} else if(errors[errorKey]['field'] === 'password') {
+							const index = valid_fields.indexOf(new_password);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_password.addClass('is-invalid')
+							new_password.removeClass('is-valid')
+						}
+						Toast.fire({
+                            icon: 'error',
+                            title: errors[errorKey]['error']
+                        })
+					}
+					for (const validFieldsKey in valid_fields) {
+						valid_fields[validFieldsKey].addClass('is-valid')
+						valid_fields[validFieldsKey].removeClass('is-invalid')
+					}
+				}
+            }
+        });
+	}
+	$(window).on('load', function() {
+		refresh()
+	})
+	function show_edit_form(id) {
+		$.get("/users/id/"+id, function(data) {
+			$('#edit_username').val(data['username'])
+			$('#edit_email').val(data['email'])
+			$('#edit_confirm_button').attr('onclick', "process_edit("+data['id']+")")
+			$('#edit-existing-modal').modal('toggle')
+		})
+	}
+	function process_edit(id) {
+		new_username = $('#edit_username')
+		new_email = $('#edit_email')
+		$.ajax({
+            type: "PATCH",
+            url: '/users/edit/'+id,
+            data: {
+                email: new_email.val(),
+				username: new_username.val(),
+            },
+            success: function(data)
+            {
+                if(data['success'] === true) {
+                	$('#edit-existing-modal').modal('toggle')
+					new_email.val('')
+					new_email.removeClass('is-valid').removeClass('is-invalid')
+					new_username.val('')
+					new_username.removeClass('is-valid').removeClass('is-invalid')
+                	$('#edit_confirm_button').removeAttr('onclick')
+					Toast.fire({
+						icon: 'success',
+						title: 'User edited successfully.'
+            		})
+					refresh()
+                } else {
+                	valid_fields = [new_username, new_email]
+					const errors = data['errors']
+                    console.log(errors)
+					for (const errorKey in errors) {
+						if(errors[errorKey]['field'] === 'username') {
+							const index = valid_fields.indexOf(new_username);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_username.addClass('is-invalid')
+							new_username.removeClass('is-valid')
+						} else if(errors[errorKey]['field'] === 'email') {
+							const index = valid_fields.indexOf(new_email);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							new_email.addClass('is-invalid')
+							new_email.removeClass('is-valid')
+						}
+						Toast.fire({
+                            icon: 'error',
+                            title: errors[errorKey]['error']
+                        })
+					}
+					for (const validFieldsKey in valid_fields) {
+						valid_fields[validFieldsKey].addClass('is-valid')
+						valid_fields[validFieldsKey].removeClass('is-invalid')
+					}
+				}
+            }
+        });
+	}
+	function show_role_form(id) {
+		$.get("/users/id/"+id, function(data) {
+			$('#role').val(data['role'])
+			$('#role_confirm_button').attr('onclick', "process_role("+data['id']+")")
+			$('#adjust-role-modal').modal('toggle')
+		})
+	}
+	function process_role(id) {
+		password = $('#admin_pw')
+		role = $('#role')
+		$.ajax({
+            type: "PATCH",
+            url: '/users/role/'+id,
+            data: {
+                password: password.val(),
+				role: role.val(),
+            },
+            success: function(data)
+            {
+                if(data['success'] === true) {
+                	$('#adjust-role-modal').modal('toggle')
+					password.val('')
+					password.removeClass('is-valid').removeClass('is-invalid')
+					role.val('')
+					role.removeClass('is-valid').removeClass('is-invalid')
+                	$('#role_confirm_button').removeAttr('onclick')
+					Toast.fire({
+						icon: 'success',
+						title: 'User role edited successfully.'
+            		})
+					refresh()
+                } else {
+                	valid_fields = [password, role]
+					const errors = data['errors']
+                    console.log(errors)
+					for (const errorKey in errors) {
+						if(errors[errorKey]['field'] === 'password') {
+							const index = valid_fields.indexOf(password);
+							if (index !== -1) {
+							  valid_fields.splice(index, 1);
+							}
+							password.addClass('is-invalid')
+							password.removeClass('is-valid')
+						}
+						Toast.fire({
+                            icon: 'error',
+                            title: errors[errorKey]['error']
+                        })
+					}
+					for (const validFieldsKey in valid_fields) {
+						valid_fields[validFieldsKey].addClass('is-valid')
+						valid_fields[validFieldsKey].removeClass('is-invalid')
+					}
+				}
+            }
+        });
+	}
+</script>
+</body>
+</html>
