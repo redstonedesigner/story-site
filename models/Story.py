@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
-from models.User import User
+from models import User, Category
 
 
 class Story(Base):
@@ -10,14 +10,23 @@ class Story(Base):
 	title = Column(String(255), nullable=False)
 	description = Column(String(255), nullable=False)
 	categories = Column(String(255), nullable=False)
+	url_slug = Column(String(32), nullable=False, unique=True)
 
-	def __init__(self, author: User = None, title=None, description=None, categories: list = None):
+	def __init__(
+			self,
+			author: User = None,
+			title: str = None,
+			description: str = None,
+			categories: list[Category] = None,
+			url_slug: str = None):
 		self.author = author.id
 		self.description = description
 		self.title = title
 		self.categories = list()
 		for i in categories:
 			self.categories.append(i.id)
+		self.categories = str(self.categories)
+		self.url_slug = url_slug
 
 	def __repr__(self):
 		return '<Story %r>' % self.title
