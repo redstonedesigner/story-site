@@ -47,4 +47,4 @@ def handle_500_error(e):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

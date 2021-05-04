@@ -9,7 +9,6 @@ class Story(Base):
 	author = Column(String(32), ForeignKey('users.id'), nullable=False)
 	title = Column(String(255), nullable=False)
 	description = Column(String(255), nullable=False)
-	categories = Column(String(255), nullable=False)
 	url_slug = Column(String(32), nullable=False, unique=True)
 
 	def __init__(

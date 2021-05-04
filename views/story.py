@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
-from models import Story, Category, User
+from models import Story, Category, User, StoryCategory
 from checks import login_required
 
 story_bp = Blueprint(
@@ -13,22 +13,20 @@ story_bp = Blueprint(
 @story_bp.route('/')
 @login_required
 def list_view():
-    return render_template('story_all.html', g=g)
+    return render_template('stories/story_recent.html', g=g)
 
 
-@story_bp.route('/all')
+@story_bp.route('/recent-json')
 @login_required
 def list_process():
     stories: list[Story] = Story.query.all()
     story_list = []
     for story in stories:
-        story_categories = list(story.categories)
+        categories = StoryCategory.query.filter(StoryCategory.story_id == story.id).limit(10).all()
         story_category_slugs = []
-        for category in story_categories:
-            cat: Category = Category.query.filter(Category.id == category).first()
-            if cat is None:
-                return abort(500)
-            story_category_slugs.append(cat.url_slug)
+        for category_relation in categories:
+            category: Category = Category.query.filter(category_relation.category_id == Category.id).first()
+            story_category_slugs.append(category.url_slug)
         author: User = User.query.filter(User.id == story.author).first()
         if author is None:
             return abort(500)
