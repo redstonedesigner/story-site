@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
 from models import User, Category
+import datetime
 
 
 class Story(Base):
@@ -10,6 +11,8 @@ class Story(Base):
 	title = Column(String(255), nullable=False)
 	description = Column(String(255), nullable=False)
 	url_slug = Column(String(32), nullable=False, unique=True)
+	created_at = Column(String(48), unique=False, default=datetime.datetime.utcnow())
+	modified_at = Column(String(48), unique=False, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
 
 	def __init__(
 			self,
