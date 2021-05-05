@@ -47,4 +47,4 @@ def single_view(slug):
     s: Story = Story.query.filter(Story.url_slug == slug).first()
     if s is None:
         return abort(404)
-    return render_template('user_single.html', g=g, s=s)
+    return render_template('story_single.html', g=g, s=s)
