@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 import datetime
@@ -11,9 +11,9 @@ class Chapter(Base):
     story_id = Column(Integer, ForeignKey('stories.id', ondelete="CASCADE", name="chapter_story_id"), unique=False)
     title = Column(String(255), unique=False, nullable=False)
     content = Column(Text, unique=False, nullable=False)
-    created_at = Column(String(48), unique=False, default=datetime.datetime.utcnow())
-    modified_at = Column(String(48), unique=False, default=datetime.datetime.utcnow(),
-                         onupdate=datetime.datetime.utcnow())
+    created_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow)
+    modified_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow,
+                         onupdate=datetime.datetime.utcnow)
 
     story = relationship(
         "Story",

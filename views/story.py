@@ -19,10 +19,10 @@ def list_view():
 @story_bp.route('/recent-json')
 @login_required
 def list_process():
-    stories: list[Story] = Story.query.all()
+    stories: list[Story] = Story.query.order_by(Story.modified_at).limit(10).all()
     story_list = []
     for story in stories:
-        categories = StoryCategory.query.filter(StoryCategory.story_id == story.id).limit(10).all()
+        categories = StoryCategory.query.filter(StoryCategory.story_id == story.id).all()
         story_category_slugs = []
         for category_relation in categories:
             category: Category = Category.query.filter(category_relation.category_id == Category.id).first()

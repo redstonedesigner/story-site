@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 from models import User, Category
@@ -13,8 +13,8 @@ class Story(Base):
 	description = Column(String(255), nullable=False)
 	url_slug = Column(String(32), nullable=False, unique=True)
 	multiple_chapters = Column(Boolean, nullable=False)
-	created_at = Column(String(48), unique=False, default=datetime.datetime.utcnow())
-	modified_at = Column(String(48), unique=False, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
+	created_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow())
+	modified_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
 
 	chapters = relationship(
 		"Chapter",
