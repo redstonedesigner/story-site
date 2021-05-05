@@ -28,16 +28,11 @@ class Story(Base):
 			author: User = None,
 			title: str = None,
 			description: str = None,
-			categories: list[Category] = None,
 			url_slug: str = None,
 			multiple_chapters: bool = None):
 		self.author = author.id
 		self.description = description
 		self.title = title
-		self.categories = list()
-		for i in categories:
-			self.categories.append(i.id)
-		self.categories = str(self.categories)
 		self.url_slug = url_slug
 		self.multiple_chapters = multiple_chapters
 

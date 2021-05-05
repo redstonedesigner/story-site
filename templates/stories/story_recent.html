@@ -85,13 +85,13 @@
                 let category_string = ""
                 for (const categoryDataKey in story['categories']) {
                     category = story['categories'][categoryDataKey]
-                    category_string += `<a href='${category}'>${category}</a> `
+                    category_string += `<a href='/categories/${category}'>${category}</a> `
                 }
 				html_string += `<div class="col-md-6">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">
-                  ${story['title']} by <a href='${story['author']}'>${story['author']}</a>
+                  ${story['title']} by <a href='/users/${story['author']}'>${story['author']}</a>
                 </h3>
               </div>
               <div class="card-body">

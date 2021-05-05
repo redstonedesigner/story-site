@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
 from models import Story, Category, User, StoryCategory
 from checks import login_required
+from sqlalchemy import desc, asc
 
 story_bp = Blueprint(
     'stories',
@@ -19,7 +20,7 @@ def list_view():
 @story_bp.route('/recent-json')
 @login_required
 def list_process():
-    stories: list[Story] = Story.query.order_by(Story.modified_at).limit(10).all()
+    stories: list[Story] = Story.query.order_by(Story.modified_at.desc()).limit(10).all()
     story_list = []
     for story in stories:
         categories = StoryCategory.query.filter(StoryCategory.story_id == story.id).all()
