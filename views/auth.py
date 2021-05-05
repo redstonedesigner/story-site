@@ -18,6 +18,9 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = User.query.filter(User.id == user_id).first()
+        if g.user is None:
+            session.clear()
+            return redirect('/auth/login')
         email_hash = hashlib.md5(g.user.email.encode('utf-8')).hexdigest()
         g.avatar_url = "https://www.gravatar.com/avatar/" + email_hash + ".jpg"
 
