@@ -40,7 +40,6 @@ def upgrade():
     sa.Column('author', sa.String(length=32), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=False),
     sa.Column('description', sa.String(length=255), nullable=False),
-    sa.ForeignKeyConstraint(['author'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

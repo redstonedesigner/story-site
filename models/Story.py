@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 from models import User, Category
 import datetime
@@ -7,12 +8,19 @@ import datetime
 class Story(Base):
 	__tablename__ = "stories"
 	id = Column(Integer, primary_key=True, autoincrement=True)
-	author = Column(String(32), ForeignKey('users.id'), nullable=False)
+	author = Column(String(32), ForeignKey('users.id', ondelete="CASCADE", name="author_id"), nullable=False)
 	title = Column(String(255), nullable=False)
 	description = Column(String(255), nullable=False)
 	url_slug = Column(String(32), nullable=False, unique=True)
 	created_at = Column(String(48), unique=False, default=datetime.datetime.utcnow())
 	modified_at = Column(String(48), unique=False, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
+
+	chapters = relationship(
+		"Chapter",
+		back_populates="story",
+		cascade="all, delete",
+		passive_deletes=True
+	)
 
 	def __init__(
 			self,

@@ -35,6 +35,6 @@ def downgrade():
 
     with op.batch_alter_table('categories', schema=None) as batch_op:
         batch_op.add_column(sa.Column('short_name', sa.VARCHAR(length=4), nullable=False))
-        batch_op.drop_constraint(None, type_='unique')
+        batch_op.drop_constraint('categories_url_slug', type_='unique')
 
     # ### end Alembic commands ###
