@@ -13,8 +13,8 @@ class Story(Base):
 	description = Column(String(255), nullable=False)
 	url_slug = Column(String(32), nullable=False, unique=True)
 	multiple_chapters = Column(Boolean, nullable=False)
-	created_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow())
-	modified_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
+	created_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow)
+	modified_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
 	chapters = relationship(
 		"Chapter",
