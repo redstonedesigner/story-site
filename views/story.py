@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
-from models import Story, Category, User, StoryCategory
+from models import Story, Category, User, StoryCategory, Chapter
 from checks import login_required
 from sqlalchemy import desc, asc
 
@@ -49,3 +49,27 @@ def single_view(slug):
     if s is None:
         return abort(404)
     return render_template('story_single.html', g=g, s=s)
+
+
+@story_bp.route('/<int:id>-json')
+@login_required
+def single_json(id):
+    s: Story = Story.query.filter(Story.id == id).first()
+    if s is None:
+        return abort(404)
+    chapters = []
+    for i in s.chapters:
+        chapters.append({
+            "title": i.title,
+            "id": i.id,
+            "created_at": i.created_at,
+            "modified_at": i.modified_at
+        })
+    story = {
+        "title": s.title,
+        "description": s.description,
+        "created": s.created_at,
+        "last_modified": s.modified_at,
+        "chapters": chapters
+    }
+    return jsonify(story)
