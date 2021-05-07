@@ -19,3 +19,8 @@ class Chapter(Base):
         "Story",
         back_populates="chapters"
     )
+    
+    def __init__(self, story_id: int = None, title: str = None, content: str = None):
+        self.story_id = story_id
+        self.title = title
+        self.content = content
