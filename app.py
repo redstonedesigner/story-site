@@ -46,5 +46,11 @@ def handle_500_error(e):
     return render_template('500.html', g=g)
 
 
+@app.errorhandler(403)
+@login_required
+def handle_403_error(e):
+    return render_template('403.html', g=g)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
