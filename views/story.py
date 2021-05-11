@@ -46,10 +46,10 @@ def single_view(slug):
     return render_template('story_single.html', g=g, s=s)
 
 
-@story_bp.route('/<int:id>-json')
+@story_bp.route('/<string:url_slug>-json')
 @login_required
-def single_json(id):
-    s: Story = Story.query.filter(Story.id == id).first()
+def single_json(url_slug):
+    s: Story = Story.query.filter(Story.url_slug == url_slug).first()
     if s is None:
         return abort(404)
     categories = s.get_category_relations()
@@ -78,3 +78,44 @@ def single_json(id):
         story_content = s.chapters[0].content
         story['content'] = story_content
     return jsonify(story)
+
+
+@story_bp.route('/<string:story_slug>/<string:chapter_slug>')
+@login_required
+def single_chapter_view(story_slug, chapter_slug):
+    s: Story = Story.query.filter(Story.url_slug == story_slug).first()
+    if s is None:
+        return abort(404)
+    c: Chapter = Chapter.query.filter(Chapter.url_slug == chapter_slug).first()
+    if c is None:
+        return abort(404)
+    return render_template('story_chapter.html', g=g, s=s, c=c)
+
+
+@story_bp.route('/<string:story_slug>/<string:category_slug>-json')
+@login_required
+def chapter_json(story_slug, category_slug):
+    s: Story = Story.query.filter(Story.url_slug == story_slug).first()
+    if s is None:
+        return abort(404)
+    c: Chapter = Chapter.query.filter(Chapter.url_slug == category_slug).first()
+    if c is None:
+        return abort(404)
+    categories = s.get_category_relations()
+    story = {
+        "title": s.title,
+        "description": s.description,
+        "categories": categories,
+        "has_chapters": s.multiple_chapters,
+        "created": utils.format_date(s.created_at),
+        "last_modified": utils.format_date(s.modified_at),
+        "author": s.get_author().username,
+        "url_slug": s.url_slug
+    }
+    chapter = {
+        "title": c.title,
+        "content": c.content,
+        "created": utils.format_date(c.created_at),
+        "last_modified": utils.format_date(c.modified_at),
+    }
+    return jsonify(story=story, chapter=chapter)

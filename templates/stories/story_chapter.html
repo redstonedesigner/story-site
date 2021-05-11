@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "template/pace.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | {{ s.title }} - {{ c.title }}</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{{ c.title }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/stories/">Stories</a></li>
+                <li class="breadcrumb-item"><a href="/stories/{{ s.url_slug }}">{{ s.title }}</a></li>
+                <li class="breadcrumb-item active">{{ c.title }}</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content" id="story">
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX Script -->
+<script>
+    function refresh() {
+        const selector = $('#story')
+        $.get("/stories/{{ s.url_slug }}/{{ c.url_slug }}-json", function(data) {
+			const story = data['story']
+            const chapter = data['chapter']
+            const categories = story['categories']
+            let categories_html = ``
+            for (const categoriesDataKey in categories) {
+                const category = categories[categoriesDataKey]
+                categories_html += `<a href="/categories/${category['slug']}" title="${category['name']}">${category['slug']}</a> `
+            }
+            let story_info_html = `<div class="row">
+<div class="col-md-6">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">Story Information</h3>
+<div class="card-tools">
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body">
+<dl class="row">
+                  <dt class="col-sm-4">Author</dt>
+                  <dd class="col-sm-8">${story['author']} (<a href='/users/${data['author']}'>View Profile</a>)</dd>
+                  <dt class="col-sm-4">Description</dt>
+                  <dd class="col-sm-8">${story['description']}</dt>
+                  <dt class="col-sm-4">Categories</dt>
+                  <dd class="col-sm-8">${categories_html}</dd>
+                  <dt class="col-sm-4">Created</dt>
+                  <dd class="col-sm-8">${story['created']}</dd>
+                  <dt class="col-sm-4">Last Modified</dt>
+                  <dd class="col-sm-8">${story['last_modified']}</dd>
+                </dl>
+</div>
+</div>
+</div>`
+            story_info_html += `<div class="col-md-6">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">Chapter Information</h3>
+<div class="card-tools">
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body">
+<dl class="row">
+                  <dt class="col-sm-4">Title</dt>
+                  <dd class="col-sm-8">${chapter['title']}</dd>
+                  <dt class="col-sm-4">Created</dt>
+                  <dd class="col-sm-8">${chapter['created']}</dd>
+                  <dt class="col-sm-4">Last Modified</dt>
+                  <dd class="col-sm-8">${chapter['last_modified']}</dd>
+                </dl>
+</div>
+</div>
+</div>
+</div>`
+            selector.append(story_info_html)
+            const chapter_html = `<div class="row">
+<div class="col-md-12">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">${chapter['title']}</h3>
+<div class="card-tools">
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body">
+<dl class="row">
+${chapter['content']}
+</div>
+</div>
+</div>
+</div>`
+            selector.append(chapter_html)
+		})
+        return "Complete"
+    }
+	$(window).on('load', function() {
+		refresh()
+    })
+</script>
+</body>
+</html>
