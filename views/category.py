@@ -38,7 +38,7 @@ def list_process():
 @login_required
 def admin_view():
 	if g.user.role != 2:
-		return redirect('/')
+		return abort(403)
 	return render_template('cat_admin.html')
 
 
@@ -46,7 +46,7 @@ def admin_view():
 @login_required
 def admin_delete():
 	if g.user.role != 2:
-		return redirect('/')
+		return abort(403)
 	category_id = request.form['category']
 	category = Category.query.filter(Category.id == category_id).first()
 	db_session.delete(category)
@@ -57,6 +57,8 @@ def admin_delete():
 @categories_bp.route('/create', methods=['PUT'])
 @login_required
 def admin_create():
+	if g.user.role != 2:
+		return abort(403)
 	name = request.form.get('name')
 	url_slug = request.form.get('url_slug')
 	description = request.form.get('description')
@@ -118,6 +120,8 @@ def get_by_id_process(id):
 @categories_bp.route('/edit/<string:id>', methods=['PATCH'])
 @login_required
 def edit_process(id):
+	if g.user.role != 2:
+		return abort(403)
 	name = request.form.get('name')
 	url_slug = request.form.get('url_slug')
 	description = request.form.get('description')

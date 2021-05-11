@@ -36,6 +36,8 @@ def list_process_restricted_data():
 @users_bp.route('/admin-all')
 @login_required
 def list_process_all_data():
+	if g.user.role != 2:
+		return abort(403)
 	users = User.query.all()
 	user_list = []
 	for user in users:
@@ -53,7 +55,7 @@ def list_process_all_data():
 @login_required
 def admin_view():
 	if g.user.role != 2:
-		return redirect('/')
+		return abort(403)
 	return render_template('user_admin.html')
 
 
@@ -61,7 +63,7 @@ def admin_view():
 @login_required
 def admin_delete():
 	if g.user.role != 2:
-		return redirect('/')
+		return abort(403)
 	user_id = request.form['user']
 	user = User.query.filter(User.id == user_id).first()
 	db_session.delete(user)
@@ -72,6 +74,8 @@ def admin_delete():
 @users_bp.route('/create', methods=['PUT'])
 @login_required
 def admin_create():
+	if g.user.role != 2:
+		return abort(403)
 	username = request.form.get('username')
 	email = request.form.get('email')
 	password = request.form.get('password')
@@ -121,6 +125,8 @@ def admin_create():
 @users_bp.route('/id/<string:id>')
 @login_required
 def get_by_id_process(id):
+	if g.user.role != 2:
+		return abort(403)
 	u = User.query.filter(User.id == id).first()
 	if u is None:
 		return abort(404)
@@ -135,6 +141,8 @@ def get_by_id_process(id):
 @users_bp.route('/edit/<string:id>', methods=['PATCH'])
 @login_required
 def edit_process(id):
+	if g.user.role != 2:
+		return abort(403)
 	username = request.form.get('username')
 	email = request.form.get('email')
 	errors = []
@@ -168,12 +176,15 @@ def single_view(username):
 	u = User.query.filter(User.username == username).first()
 	if u is None:
 		return abort(404)
-	return render_template('user_single.html', g=g, u=u)
+	return abort(500)
+	#return render_template('user_single.html', g=g, u=u)
 
 
 @users_bp.route('/role/<int:id>', methods=["PATCH"])
 @login_required
 def set_role_process(id):
+	if g.user.role != 2:
+		return abort(403)
 	u = User.query.filter(User.id == id).first()
 	password = request.form.get('password')
 	hashed_pw = sha512(password.encode('utf-8')).hexdigest()

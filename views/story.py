@@ -53,21 +53,28 @@ def single_json(id):
     if s is None:
         return abort(404)
     categories = s.get_category_relations()
-    chapters = []
-    for i in s.chapters:
-        chapters.append({
-            "title": i.title,
-            "id": i.id,
-            "created_at": utils.format_date(i.created_at),
-            "modified_at": utils.format_date(i.created_at)
-        })
     story = {
         "title": s.title,
         "description": s.description,
         "categories": categories,
+        "has_chapters": s.multiple_chapters,
         "created": utils.format_date(s.created_at),
         "last_modified": utils.format_date(s.modified_at),
-        "chapters": chapters,
-        "author": s.get_author().username
+        "author": s.get_author().username,
+        "url_slug": s.url_slug
     }
+    if s.multiple_chapters:
+        chapters = []
+        for i in s.chapters:
+            chapters.append({
+                "title": i.title,
+                "id": i.id,
+                "created_at": utils.format_date(i.created_at),
+                "modified_at": utils.format_date(i.created_at),
+                "url_slug": i.url_slug
+            })
+        story['chapters'] = chapters
+    else:
+        story_content = s.chapters[0].content
+        story['content'] = story_content
     return jsonify(story)

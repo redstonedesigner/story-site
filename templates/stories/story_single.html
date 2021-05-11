@@ -39,7 +39,7 @@
     </section>
 
     <!-- Main content -->
-    <section class="content" id="stories">
+    <section class="content" id="story">
     </section>
     <!-- /.content -->
   </div>
@@ -58,8 +58,96 @@
 <!-- AJAX Script -->
 <script>
     function refresh() {
+        const selector = $('#story')
         $.get("/stories/{{ s.id }}-json", function(data) {
-			return false
+			const categories = data['categories']
+            let categories_html = ``
+            for (const categoriesDataKey in categories) {
+                const category = categories[categoriesDataKey]
+                categories_html += `<a href="/categories/${category['slug']}" title="${category['name']}">${category['slug']}</a> `
+            }
+            const story_info_html = `<div class="row">
+<div class="col-md-12">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">Story Information</h3>
+<div class="card-tools">
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body">
+<dl class="row">
+                  <dt class="col-sm-2">Author</dt>
+                  <dd class="col-sm-10">${data['author']} (<a href='/users/${data['author']}'>View Profile</a>)</dd>
+                  <dt class="col-sm-2">Description</dt>
+                  <dd class="col-sm-10">${data['description']}</dt>
+                  <dt class="col-sm-2">Categories</dt>
+                  <dd class="col-sm-10">${categories_html}</dd>
+                  <dt class="col-sm-2">Created</dt>
+                  <dd class="col-sm-10">${data['created']}</dd>
+                  <dt class="col-sm-2">Last Modified</dt>
+                  <dd class="col-sm-10">${data['last_modified']}</dd>
+                </dl>
+</div>
+</div>
+</div>
+</div>`
+            selector.append(story_info_html)
+            let story_html = ``
+            if(data['has_chapters'] === false) {
+                story_html = `<div class="row">
+<div class="col-md-12">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">${data['title']}</h3>
+<div class="card-tools">
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body">
+<dl class="row">
+${data['content']}
+</div>
+</div>
+</div>
+</div>`
+            } else {
+                let chapters_html = ``
+                const chapters = data['chapters']
+                for (const chaptersKey in chapters) {
+                    const chapter = chapters[chaptersKey]
+                    const chapter_html = `<tr>
+<td><a href="/stories/{{ s.url_slug }}/${chapter['url_slug']}">${chapter['title']}</a></td>
+<td>${chapter['created_at']}</td>
+<td>${chapter['modified_at']}</td>
+</tr>`
+                    chapters_html += chapter_html
+                }
+                story_html = `<div class="row">
+<div class="col-md-12">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">Available Chapters</h3>
+<div class="card-tools">
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body p-0">
+<table class="table table-hover">
+<thead>
+<th>Title</th>
+<th>Created</th>
+<th>Last Modified</th>
+</thead>
+<tbody>
+${chapters_html}
+</tbody>
+</table>
+</div>
+</div>
+</div>`
+            }
+            selector.append(story_html)
 		})
         return "Complete"
     }

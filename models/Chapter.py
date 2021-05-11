@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 import datetime
+from shortuuid import uuid
 
 
 class Chapter(Base):
@@ -11,6 +12,7 @@ class Chapter(Base):
     story_id = Column(Integer, ForeignKey('stories.id', ondelete="CASCADE", name="chapter_story_id"), unique=False)
     title = Column(String(255), unique=False, nullable=False)
     content = Column(Text, unique=False, nullable=False)
+    url_slug = Column(String, unique=True, nullable=False, default=uuid)
     created_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow)
     modified_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow,
                          onupdate=datetime.datetime.utcnow)
