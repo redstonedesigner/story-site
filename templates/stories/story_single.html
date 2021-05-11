@@ -59,7 +59,7 @@
 <script>
     function refresh() {
         const selector = $('#story')
-        $.get("/stories/{{ s.id }}-json", function(data) {
+        $.get("/stories/{{ s.url_slug }}-json", function(data) {
 			const categories = data['categories']
             let categories_html = ``
             for (const categoriesDataKey in categories) {
@@ -117,7 +117,7 @@ ${data['content']}
                 for (const chaptersKey in chapters) {
                     const chapter = chapters[chaptersKey]
                     const chapter_html = `<tr>
-<td><a href="/stories/{{ s.url_slug }}/${chapter['url_slug']}">${chapter['title']}</a></td>
+<td><a href="/stories/${data['url_slug']}/${chapter['url_slug']}">${chapter['title']}</a></td>
 <td>${chapter['created_at']}</td>
 <td>${chapter['modified_at']}</td>
 </tr>`

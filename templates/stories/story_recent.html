@@ -67,8 +67,7 @@
 				const story = data['stories'][jsonDataKey]
                 let category_string = ""
                 for (const categoryDataKey in story['categories']) {
-                    category = story['categories'][categoryDataKey]
-                    category_string += `<a href='/categories/${category}'>${category}</a> `
+                    category_string += `<a href='/categories/${story['categories'][categoryDataKey]['slug']}' title="${story['categories'][categoryDataKey]['name']}">${story['categories'][categoryDataKey]['slug']}</a> `
                 }
 				html_string += `<div class="col-md-6">
             <div class="card">
