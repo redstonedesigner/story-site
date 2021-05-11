@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey
 from database import Base
+from models import Story
+from .Category import Category
 
 
 class StoryCategory(Base):
@@ -14,3 +16,13 @@ class StoryCategory(Base):
 
     def __repr__(self):
         return "<Story/Category Relation %s>" % self.id
+
+    def get_category(self):
+        cat_id = self.category_id
+        cat: Category = Category.query.filter(Category.id == cat_id).first()
+        return cat
+
+    def get_story(self):
+        story_id = self.story_id
+        story: Story = Story.query.filter(Story.id == story_id)
+        return story

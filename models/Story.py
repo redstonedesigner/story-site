@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
-from models import User, Category
+from .User import User
+from .StoryCategory import StoryCategory
+from .Category import Category
 import datetime
 
 
@@ -20,7 +22,8 @@ class Story(Base):
 		"Chapter",
 		back_populates="story",
 		cascade="all, delete",
-		passive_deletes=True
+		passive_deletes=True,
+		order_by="Chapter.created_at"
 	)
 
 	def __init__(
@@ -38,3 +41,20 @@ class Story(Base):
 
 	def __repr__(self):
 		return '<Story %r>' % self.title
+
+	def get_category_relations(self):
+		category_relations: list[StoryCategory] = StoryCategory.query.filter(StoryCategory.story_id == self.id).all()
+		categories = []
+		for i in category_relations:
+			category: Category = i.get_category()
+			data = {
+				'slug': category.url_slug,
+				'name': category.name
+			}
+			categories.append(data)
+		return categories
+
+	def get_author(self):
+		u_id = self.author
+		u: User = User.query.filter(User.id == u_id).first()
+		return u

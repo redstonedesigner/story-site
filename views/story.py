@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
 from models import Story, Category, User, StoryCategory, Chapter
 from checks import login_required
-from sqlalchemy import desc, asc
+import utils
+
 
 story_bp = Blueprint(
     'stories',
@@ -23,18 +24,12 @@ def list_process():
     stories: list[Story] = Story.query.order_by(Story.modified_at.desc()).limit(10).all()
     story_list = []
     for story in stories:
-        categories = StoryCategory.query.filter(StoryCategory.story_id == story.id).all()
-        story_category_slugs = []
-        for category_relation in categories:
-            category: Category = Category.query.filter(category_relation.category_id == Category.id).first()
-            story_category_slugs.append(category.url_slug)
-        author: User = User.query.filter(User.id == story.author).first()
-        if author is None:
-            return abort(500)
+        categories: list[Category] = story.get_category_relations()
+        author: User = story.get_author()
         data = {
             'title': story.title,
             'description': story.description,
-            'categories': story_category_slugs,
+            'categories': categories,
             'url_slug': story.url_slug,
             'author': author.username
         }
@@ -57,19 +52,22 @@ def single_json(id):
     s: Story = Story.query.filter(Story.id == id).first()
     if s is None:
         return abort(404)
+    categories = s.get_category_relations()
     chapters = []
     for i in s.chapters:
         chapters.append({
             "title": i.title,
             "id": i.id,
-            "created_at": i.created_at,
-            "modified_at": i.modified_at
+            "created_at": utils.format_date(i.created_at),
+            "modified_at": utils.format_date(i.created_at)
         })
     story = {
         "title": s.title,
         "description": s.description,
-        "created": s.created_at,
-        "last_modified": s.modified_at,
-        "chapters": chapters
+        "categories": categories,
+        "created": utils.format_date(s.created_at),
+        "last_modified": utils.format_date(s.modified_at),
+        "chapters": chapters,
+        "author": s.get_author().username
     }
     return jsonify(story)
