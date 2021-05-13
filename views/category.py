@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
-from models import Category
+from models import Category, StoryCategory, Story
 from checks import login_required
 from database import db_session
 
@@ -172,3 +172,28 @@ def single_view(slug):
 	if c is None:
 		return abort(404)
 	return render_template('cat_single.html', g=g, c=c)
+
+
+@categories_bp.route('/<string:slug>-json')
+@login_required
+def single_json(slug):
+	c = Category.query.filter(Category.url_slug == slug).first()
+	if c is None:
+		return abort(404)
+	stories: list[Story] = [i.get_story() for i in StoryCategory.query.filter(StoryCategory.category_id == c.id).all()]
+	stories_list = []
+	for i in stories:
+		data = {
+			"title": i.title,
+			"url_slug": i.url_slug,
+			"description": i.description,
+			"categories": i.get_category_relations(),
+			"author": i.get_author().username
+		}
+		stories_list.append(data)
+	category = {
+		"name": c.name,
+		"description": c.description,
+		"url_slug": c.url_slug
+	}
+	return jsonify(stories=stories_list, category=category)

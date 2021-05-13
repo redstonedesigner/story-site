@@ -4,7 +4,7 @@
     {% include "template/pace.html" %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Story Site | {{ c.name }}</title>
+  <title>Story Site | </title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -25,13 +25,13 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 id="category_name">{{ c.name }}</h1>
+            <h1 class="category-name-display"></h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
 				<li class="breadcrumb-item"><a href="/">Home</a></li>
                 <li class="breadcrumb-item"><a href="/categories/">Categories</a></li>
-                <li class="breadcrumb-item active" id="category_name">{{ c.name }}</li>
+                <li class="breadcrumb-item active category-name-display"></li>
             </ol>
           </div>
         </div>
@@ -39,18 +39,7 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
-
-      <!-- Default box -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Stories in category {{ c.name }}</h3>
-        </div>
-        <div class="card-body" id="stories">
-        </div>
-        <!-- /.card-body -->
-      </div>
-      <!-- /.card -->
+    <section class="content" id="category_stories">
     </section>
     <!-- /.content -->
   </div>
@@ -69,7 +58,45 @@
 <!-- AJAX Script -->
 <script>
 	$(window).on('load', function() {
-
+        $.get('/categories/{{ c.url_slug }}-json', function (data) {
+            const selector = $('#category_stories')
+            const stories = data['stories']
+            const category = data['category']
+            $('.category-name-display').append(category['name'])
+            $('title').append(category['name'])
+            let html_string = "<div class='row'>"
+            let contains = 0
+			for (const jsonDataKey in stories) {
+				const story = stories[jsonDataKey]
+                let category_string = ""
+                for (const categoryDataKey in story['categories']) {
+                    category_string += `<a href='/categories/${story['categories'][categoryDataKey]['slug']}' title="${story['categories'][categoryDataKey]['name']}">${story['categories'][categoryDataKey]['slug']}</a> `
+                }
+				html_string += `<div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  ${story['title']} by <a href='/users/${story['author']}'>${story['author']}</a>
+                </h3>
+              </div>
+              <div class="card-body">
+                <dl>
+                  <dt>Categories</dt>
+                  <dd>${category_string}</dd>
+                  <dt>Description</dt>
+                  <dd>${story['description']}</dd>
+                  <dt><a href='/stories/${story['url_slug']}'>Read more...</a></dt>
+                </dl>
+              </div>
+            </div>
+          </div>`
+			}
+			contains += 1
+            if(contains % 2 === 0) {
+                html_string += "</div><div class='row'>"
+            }
+            selector.html(html_string)
+		})
 	})
 </script>
 </body>

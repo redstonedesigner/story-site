@@ -118,4 +118,11 @@ def chapter_json(story_slug, category_slug):
         "created": utils.format_date(c.created_at),
         "last_modified": utils.format_date(c.modified_at),
     }
+    c_index = s.chapters.index(c)
+    if c_index + 1 < len(s.chapters):
+        next_chapter: Chapter = s.chapters[c_index+1]
+        chapter['next'] = next_chapter.url_slug
+    if c_index != 0:
+        prev_chapter: Chapter = s.chapters[c_index-1]
+        chapter['prev'] = prev_chapter.url_slug
     return jsonify(story=story, chapter=chapter)
