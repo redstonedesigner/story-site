@@ -70,7 +70,7 @@ def single_json(url_slug):
                 "title": i.title,
                 "id": i.id,
                 "created_at": utils.format_date(i.created_at),
-                "modified_at": utils.format_date(i.created_at),
+                "modified_at": utils.format_date(i.modified_at),
                 "url_slug": i.url_slug
             })
         story['chapters'] = chapters
