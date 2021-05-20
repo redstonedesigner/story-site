@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "template/pace.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | A-Z Search</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Story A-Z Search</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+				<li class="breadcrumb-item">Stories</li>
+                <li class="breadcrumb-item active">A-Z Search</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content" id="stories">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Select a Letter</h3>
+              </div>
+              <div class="card-body">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item {% if l == '0' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/0">
+                          0-9
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'a' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/a">
+                          A
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'b' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/b">
+                          B
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'c' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/c">
+                          C
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'd' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/d">
+                          D
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'e' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/e">
+                          E
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'f' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/f">
+                          F
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'g' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/g">
+                          G
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'h' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/h">
+                          H
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'i' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/i">
+                          I
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'j' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/j">
+                          J
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'k' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/k">
+                          K
+                      </a>
+                  </li>
+                  <li class="page-item {% if l == 'l' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/l">
+                          L
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'm' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/m">
+                          M
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'n' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/n">
+                          N
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'o' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/o">
+                          O
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'p' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/p">
+                          P
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'q' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/q">
+                          Q
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'r' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/r">
+                          R
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 's' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/s">
+                          S
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 't' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/t">
+                          T
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'u' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/u">
+                          U
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'v' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/v">
+                          V
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'w' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/w">
+                          W
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'x' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/x">
+                          X
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'y' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/y">
+                          Y
+                      </a>
+                  </li>
+                    <li class="page-item {% if l == 'z' %}active{% endif %}">
+                      <a class="page-link" href="/stories/az/z">
+                          Z
+                      </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX Script -->
+<script>
+    function refresh() {
+        $.get("/stories/az/{{l}}-json", function(data) {
+			const selector = $('#stories');
+			let html_string = "<div class='row'>"
+            let contains = 0
+            console.log(data)
+			for (const jsonDataKey in data['stories']) {
+			    const story = data['stories'][jsonDataKey]
+                console.log(story)
+                let category_string = ""
+                for (const categoryDataKey in story['categories']) {
+                    category_string += `<a href='/categories/${story['categories'][categoryDataKey]['slug']}' title="${story['categories'][categoryDataKey]['name']}">${story['categories'][categoryDataKey]['slug']}</a> `
+                }
+				html_string += `<div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  ${story['title']} by <a href='/users/${story['author']}'>${story['author']}</a>
+                </h3>
+              </div>
+              <div class="card-body">
+                <dl>
+                  <dt>Categories</dt>
+                  <dd>${category_string}</dd>
+                  <dt>Description</dt>
+                  <dd>${story['description']}</dd>
+                  <dt><a href='/stories/${story['url_slug']}'>Read more...</a></dt>
+                </dl>
+              </div>
+            </div>
+          </div>`
+			}
+			contains += 1
+            if(contains % 2 == 0) {
+                html_string += "</div><div class='row'>"
+            }
+            selector.append(html_string)
+		})
+        return "Complete"
+    }
+	$(window).on('load', function() {
+		refresh()
+    })
+</script>
+</body>
+</html>

@@ -126,3 +126,40 @@ def chapter_json(story_slug, category_slug):
         prev_chapter: Chapter = s.chapters[c_index-1]
         chapter['prev'] = prev_chapter.url_slug
     return jsonify(story=story, chapter=chapter)
+
+
+@story_bp.route('/az')
+@story_bp.route('/az/<string:letter>')
+@login_required
+def search_az_view(letter: str = ''):
+    if len(letter) > 1:
+        return abort(400)
+    if letter == '':
+        return render_template('story_az_start.html', g=g)
+    else:
+        return render_template('story_az_results.html', g=g, l=letter)
+
+
+@story_bp.route('/az/<string:letter>-json')
+@login_required
+def search_az_json(letter: str):
+    if len(letter) != 1:
+        return abort(400)
+    stories: list[Story] = Story.query.filter(Story.title.startswith(letter.upper())).all()
+    if letter == '0':
+        for i in range(0, 9):
+            stories.append(Story.query.filter(Story.title.startswith(str(i+1))).alll())
+        stories.sort(key=lambda x: x.title)
+    story_list = []
+    for story in stories:
+        categories: list[Category] = story.get_category_relations()
+        author: User = story.get_author()
+        data = {
+            'title': story.title,
+            'description': story.description,
+            'categories': categories,
+            'url_slug': story.url_slug,
+            'author': author.username
+        }
+        story_list.append(data)
+    return jsonify(stories=story_list)

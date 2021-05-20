@@ -38,7 +38,7 @@ class Story(Base):
 			title: str = None,
 			description: str = None,
 			multiple_chapters: bool = None):
-		self.author = author.id
+		self.author_id = author.id
 		self.description = description
 		self.title = title
 		self.multiple_chapters = multiple_chapters
@@ -59,6 +59,4 @@ class Story(Base):
 		return categories
 
 	def get_author(self):
-		u_id = self.author
-		u: User = User.query.filter(User.id == u_id).first()
-		return u
+		return self.author

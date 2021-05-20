@@ -17,6 +17,7 @@
         <option value="$MODULE_DIR$/templates/categories" />
         <option value="$MODULE_DIR$/templates/users" />
         <option value="$MODULE_DIR$/templates/stories" />
+        <option value="$MODULE_DIR$/templates/authors" />
       </list>
     </option>
   </component>
