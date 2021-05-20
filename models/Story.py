@@ -11,7 +11,7 @@ from shortuuid import uuid
 class Story(Base):
 	__tablename__ = "stories"
 	id = Column(Integer, primary_key=True, autoincrement=True)
-	author = Column(String(32), ForeignKey('users.id', ondelete="CASCADE", name="author_id"), nullable=False)
+	author_id = Column(String(32), ForeignKey('users.id', ondelete="CASCADE", name="author_id"), nullable=False)
 	title = Column(String(255), nullable=False)
 	description = Column(String(255), nullable=False)
 	url_slug = Column(String(32), nullable=False, unique=True, default=uuid)
@@ -25,6 +25,11 @@ class Story(Base):
 		cascade="all, delete",
 		passive_deletes=True,
 		order_by="Chapter.created_at"
+	)
+
+	author = relationship(
+		"User",
+		back_populates="stories"
 	)
 
 	def __init__(

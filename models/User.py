@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 from database import Base
 import datetime
 
@@ -13,6 +14,14 @@ class User(Base):
     created_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow())
     modified_at = Column(DateTime, unique=False, default=datetime.datetime.utcnow(),
                          onupdate=datetime.datetime.utcnow())
+
+    stories = relationship(
+        "Story",
+        back_populates="author",
+        cascade="all, delete",
+        passive_deletes=True,
+        order_by="Story.created_at"
+    )
 
     def __init__(self, username=None, email=None, password=None):
         self.username = username
