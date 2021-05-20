@@ -1,5 +1,3 @@
-from database import db_session
-from models import StoryCategory, Category
 from datetime import datetime
 
 

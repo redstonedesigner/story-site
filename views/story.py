@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
-from models import Story, Category, User, StoryCategory, Chapter
+from models import Story, Category, User, Chapter
 from checks import login_required
 import utils
 

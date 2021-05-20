@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
+from flask import Blueprint, render_template, g, jsonify, request, abort
 from models import Category, StoryCategory, Story
 from checks import login_required
 from database import db_session
