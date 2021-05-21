@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, render_template, g
 from database import db_session
-from views import auth, category, user, story
+from views import auth, category, user, story, author
 from checks import login_required
 
 app = Flask(__name__)
@@ -27,6 +27,7 @@ app.register_blueprint(auth.auth_bp)
 app.register_blueprint(category.categories_bp)
 app.register_blueprint(user.users_bp)
 app.register_blueprint(story.story_bp)
+app.register_blueprint(author.author_bp)
 
 
 @app.teardown_appcontext
