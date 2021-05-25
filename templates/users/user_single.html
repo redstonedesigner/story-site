@@ -77,33 +77,31 @@
               <div class="card-body">
                 <strong><i class="fas fa-book mr-1"></i> Education</strong>
 
-                <p class="text-muted">
-                  B.S. in Computer Science from the University of Tennessee at Knoxville
+                <p class="text-muted" id="aboutEducation">
+
                 </p>
 
                 <hr>
 
                 <strong><i class="fas fa-map-marker-alt mr-1"></i> Location</strong>
 
-                <p class="text-muted">Malibu, California</p>
+                <p class="text-muted" id="aboutLocation"></p>
 
                 <hr>
 
                 <strong><i class="fas fa-pencil-alt mr-1"></i> Skills</strong>
 
-                <p class="text-muted">
-                  <span class="tag tag-danger">UI Design</span>
-                  <span class="tag tag-success">Coding</span>
-                  <span class="tag tag-info">Javascript</span>
-                  <span class="tag tag-warning">PHP</span>
-                  <span class="tag tag-primary">Node.js</span>
+                <p class="text-muted" id="aboutSkills">
+
                 </p>
 
                 <hr>
 
                 <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
 
-                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+                <p class="text-muted" id="aboutNotes">
+
+                </p>
               </div>
               <!-- /.card-body -->
             </div>
@@ -417,6 +415,10 @@
             $('#user-avatar').attr('src', data['avatar'])
             $('#follower_count').html(data['followers'])
             $('#following_count').html(data['following'])
+            $('#aboutEducation').text(data['about']['education'])
+            $('#aboutLocation').text(data['about']['location'])
+            $('#aboutNotes').text(data['about']['notes'])
+            $('#aboutSkills').text(data['about']['skills'])
         })
     }
 	$(window).on('load', function() {

@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, g, jsonify, redirect, request, abort
-from models import User
+from models import User, UserProfile
 from checks import login_required
 from database import db_session
 from hashlib import sha512, md5
+from html import escape
 
 users_bp = Blueprint(
     'users',
@@ -129,6 +130,9 @@ def admin_create():
         )
         db_session.add(u)
         db_session.commit()
+        up = UserProfile(id=u.id)
+        db_session.add(up)
+        db_session.commit()
         return jsonify(success=True)
 
 
@@ -220,11 +224,18 @@ def single_json(username):
         return abort(404)
     email_hash = md5(g.user.email.encode('utf-8')).hexdigest()
     u_avatar_url = "https://www.gravatar.com/avatar/" + email_hash + ".jpg"
+    profile: UserProfile = u.profile[0]
     user_details = {
         "username": u.username,
         "avatar": u_avatar_url,
         "following": u.get_following_count(),
-        "followers": u.get_follower_count()
+        "followers": u.get_follower_count(),
+        "about": {
+            "education": profile.education,
+            "location": profile.location,
+            "skills": profile.skills,
+            "notes": profile.notes
+        }
     }
     return jsonify(user_details)
 
@@ -234,3 +245,16 @@ def single_json(username):
 def user_settings_view():
     g.category = "user_settings"
     return render_template('user_settings.html')
+
+
+@users_bp.route('/settings/profile', methods=['PATCH'])
+def user_settings_edit_profile():
+    up: UserProfile = g.user.profile[0]
+    if up is None:
+        return abort(500)
+    up.education = escape(str(request.form.get('education')))
+    up.skills = escape(str(request.form.get('skills')))
+    up.location = escape(str(request.form.get('location')))
+    up.notes = escape(str(request.form.get('notes')))
+    db_session.commit()
+    return jsonify(success=True)

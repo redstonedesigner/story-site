@@ -23,6 +23,12 @@ class User(Base):
         order_by="Story.created_at"
     )
 
+    profile = relationship(
+        "UserProfile",
+        back_populates="user",
+        cascade="all, delete",
+    )
+
     def __init__(self, username=None, email=None, password=None):
         self.username = username
         self.email = email
