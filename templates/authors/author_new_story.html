@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "template/pace.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | New Story</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/plugins/select2/css/select2.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition dark-mode sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Create New Story</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/authors/">Author Area</a></li>
+                <li class="breadcrumb-item active">New Story</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Create New Story</h3>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal" id="newStoryForm">
+                <div class="form-group row">
+                    <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputTitle" placeholder="Title" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputDescription" placeholder="Description" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputCategories" class="col-sm-2 col-form-label">Categories</label>
+                    <div class="col-sm-10">
+                        <select id="inputCategories" multiple="multiple" style="width: 100%" placeholder="Select a category" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="offset-sm-2 col-sm-10">
+                        <button id="inputSubmit" type="submit" class="btn btn-default">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+<!-- Select2 -->
+<script src="/plugins/select2/js/select2.full.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX script -->
+<script>
+    $(window).on('load', function () {
+        $.get({
+            url: "/categories/all",
+            success: function(data) {
+                categories = data['categories']
+                for (const categoriesKey in categories) {
+                    $('#inputCategories').append(`<option value='${categories[categoriesKey]['id']}'>${categories[categoriesKey]['name']}`)
+                }
+            }
+        })
+        $('#inputCategories').select2()
+    })
+    $('#profileForm').submit(function updateProfile() {
+        $.ajax({
+            type: "PATCH",
+            url: '/users/settings/profile',
+            data: {
+                education: $('#inputEducation').val(),
+                location: $('#inputLocation').val(),
+                skills: $('#inputSkills').val(),
+                notes: $('#inputNotes').val()
+            },
+            success: function (data) {
+                toastr.success("Profile settings updated successfully.")
+            }
+        })
+        return false;
+    })
+</script>
+</body>
+</html>
