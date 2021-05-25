@@ -30,3 +30,27 @@ class User(Base):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def get_all_followers(self):
+        from models import Follower
+        raw_followers = Follower.query.filter(self.id == Follower.following_id).all()
+        followers = []
+        for i in raw_followers:
+            user = User.query.filter(User.id == Follower.follower_id).first()
+            followers.append(user)
+        return followers
+
+    def get_all_following(self):
+        from models import Follower
+        raw_following = Follower.query.filter(self.id == Follower.follower_id).all()
+        following = []
+        for i in raw_following:
+            user = User.query.filter(User.id == i.following_id).first()
+            following.append(user)
+        return following
+
+    def get_follower_count(self):
+        return len(self.get_all_followers())
+
+    def get_following_count(self):
+        return len(self.get_all_following())

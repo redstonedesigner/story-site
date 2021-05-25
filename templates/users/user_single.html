@@ -55,13 +55,10 @@
 
                 <ul class="list-group list-group-unbordered mb-3">
                   <li class="list-group-item">
-                    <b>Followers</b> <a class="float-right">1,322</a>
+                    <b>Followers</b> <a class="float-right" id="follower_count"></a>
                   </li>
                   <li class="list-group-item">
-                    <b>Following</b> <a class="float-right">543</a>
-                  </li>
-                  <li class="list-group-item">
-                    <b>Friends</b> <a class="float-right">13,287</a>
+                    <b>Following</b> <a class="float-right" id="following_count"></a>
                   </li>
                 </ul>
 
@@ -418,6 +415,8 @@
             $('h1').append(username)
             $('title').append(username)
             $('#user-avatar').attr('src', data['avatar'])
+            $('#follower_count').html(data['followers'])
+            $('#following_count').html(data['following'])
         })
     }
 	$(window).on('load', function() {
