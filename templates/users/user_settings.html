@@ -10,10 +10,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
-  <!-- DataTables -->
-  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/dist/css/adminlte.min.css">
 </head>
@@ -54,25 +52,25 @@
                 <div class="form-group row">
                     <label for="inputEducation" class="col-sm-2 col-form-label">Education</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="inputEducation" placeholder="Education"></textarea>
+                        <input type="text" class="form-control" id="inputEducation" placeholder="Education" value="{{ g.user.profile[0].education }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="inputLocation" class="col-sm-2 col-form-label">Location</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputLocation" placeholder="Location">
+                        <input type="text" class="form-control" id="inputLocation" placeholder="Location" value="{{ g.user.profile[0].location }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="inputSkills" class="col-sm-2 col-form-label">Skills</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
+                        <input type="text" class="form-control" id="inputSkills" placeholder="Skills" value="{{ g.user.profile[0].skills }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="inputNotes" class="col-sm-2 col-form-label">Notes</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="inputNotes" placeholder="Notes"></textarea>
+                        <input type="text" class="form-control" id="inputNotes" placeholder="Notes" value="{{ g.user.profile[0].notes }}">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -98,6 +96,8 @@
 <script src="/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
 <!-- AdminLTE App -->
 <script src="/dist/js/adminlte.min.js"></script>
 <!-- AJAX script -->
@@ -113,7 +113,7 @@
                 notes: $('#inputNotes').val()
             },
             success: function (data) {
-                console.log(data)
+                toastr.success("Profile settings updated successfully.")
             }
         })
         return false;
