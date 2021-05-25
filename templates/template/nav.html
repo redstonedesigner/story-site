@@ -9,6 +9,12 @@
         <a href="/" class="nav-link">Home</a>
       </li>
     </ul>
+    <!-- Right Navbar Links -->
+      <ul class="navbar-nav ml-auto">
+          <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </ul>
   </nav>
   <!-- /.navbar -->
 
@@ -53,8 +59,8 @@
               </p>
             </a>
           </li>
-        <li class="nav-item tree-menu">
-            <a href="#" class="nav-link">
+        <li class="nav-item tree-menu {% if g.category == "stories" and g.page != None %}menu-open{% endif %}">
+            <a href="#" class="nav-link {% if g.category == "stories" %}active{% endif %}">
               <i class="nav-icon fas fa-book-open"></i>
               <p>
                 Stories
@@ -63,13 +69,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/stories/" class="nav-link">
+                <a href="/stories/" class="nav-link {% if g.page == 'stories_recent' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Recent</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/stories/az" class="nav-link">
+                <a href="/stories/az" class="nav-link {% if g.page == 'stories_az' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>A-Z Search</p>
                 </a>
@@ -77,7 +83,7 @@
             </ul>
           </li>
         <li class="nav-item">
-            <a href="/users/" class="nav-link">
+            <a href="/users/" class="nav-link {% if g.category == "users" %}active{% endif %}">
                 <i class="nav-icon fas fa-users"></i>
                 <p>
                     Users
@@ -87,7 +93,7 @@
 			{% if g.user.role == 2 %}
 			<li class="nav-header">ADMINISTRATION</li>
 				<li class="nav-item">
-            <a href="/categories/admin" class="nav-link">
+            <a href="/categories/admin" class="nav-link  {% if g.category == "categories_admin" %}active{% endif %}">
               <i class="nav-icon fas fa-database"></i>
               <p>
                 Categories
@@ -95,7 +101,7 @@
             </a>
           </li>
 				<li class="nav-item">
-            <a href="/users/admin" class="nav-link">
+            <a href="/users/admin" class="nav-link {% if g.category == "users_admin" %}active{% endif %}">
               <i class="nav-icon fas fa-users-cog"></i>
               <p>
                 Users
@@ -104,6 +110,14 @@
           </li>
 			{% endif %}
 			<li class="nav-header">USER MENU</li>
+            <li class="nav-item">
+                <a href="/users/settings" class="nav-link {% if g.category == "user_settings" %}active{% endif %}">
+                    <i class="nav-icon fas fa-cog"></i>
+                    <p>
+                        Settings
+                    </p>
+                </a>
+            </li>
 			<li class="nav-item">
             <a href="/auth/logout" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>

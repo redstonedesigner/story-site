@@ -12,6 +12,13 @@ author_bp = Blueprint(
 )
 
 
+@author_bp.before_request
+def set_global_nav():
+    g.category = "authors"
+    g.page = None
+
+
+
 @author_bp.route('/')
 @login_required
 def author_dashboard_view():

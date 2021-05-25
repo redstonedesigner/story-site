@@ -11,6 +11,12 @@ categories_bp = Blueprint(
 )
 
 
+@categories_bp.before_request
+def set_global_nav():
+	g.category = "categories"
+	g.page = None
+
+
 @categories_bp.route('/')
 @login_required
 def list_view():
@@ -39,6 +45,7 @@ def list_process():
 def admin_view():
 	if g.user.role != 2:
 		return abort(403)
+	g.category = "categories_admin"
 	return render_template('cat_admin.html')
 
 

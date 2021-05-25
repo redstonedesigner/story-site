@@ -12,6 +12,12 @@ users_bp = Blueprint(
 )
 
 
+@users_bp.before_request
+def set_global_nav():
+    g.category = "users"
+    g.page = None
+
+
 @users_bp.route('/')
 @login_required
 def list_view():
@@ -56,6 +62,7 @@ def list_process_all_data():
 def admin_view():
     if g.user.role != 2:
         return abort(403)
+    g.category = "users_admin"
     return render_template('user_admin.html')
 
 
@@ -85,6 +92,9 @@ def admin_create():
             "field": "username",
             "error": "Username cannot be blank."
         })
+    elif username in ['admin', 'list', 'mod', 'moderator', 'administrator', 'create', 'edit', 'id', 'update', 'get',
+                      'view', 'settings']:
+        errors.append({"field": "username", "error": "Username reserved due to system limitation."})
     else:
         u_name_check = User.query.filter(User.username == username).first()
         if u_name_check is not None:
@@ -160,6 +170,9 @@ def edit_process(id):
                 "field": "email",
                 "error": "That email is already in use."
             })
+    if username in ['admin', 'list', 'mod', 'moderator', 'administrator', 'create', 'edit', 'id', 'update', 'get',
+                    'view', 'settings']:
+        errors.append({"field": "username", "error": "Username reserved due to system limitation."})
     if errors:
         return jsonify(errors=errors, success=False)
     else:
@@ -209,6 +222,15 @@ def single_json(username):
     u_avatar_url = "https://www.gravatar.com/avatar/" + email_hash + ".jpg"
     user_details = {
         "username": u.username,
-        "avatar": u_avatar_url
+        "avatar": u_avatar_url,
+        "following": u.get_following_count(),
+        "followers": u.get_follower_count()
     }
     return jsonify(user_details)
+
+
+@users_bp.route('/settings')
+@login_required
+def user_settings_view():
+    g.category = "user_settings"
+    return render_template('user_settings.html')

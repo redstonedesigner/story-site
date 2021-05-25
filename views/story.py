@@ -12,9 +12,16 @@ story_bp = Blueprint(
 )
 
 
+@story_bp.before_request
+def set_global_nav():
+    g.category = "stories"
+    g.page = None
+
+
 @story_bp.route('/')
 @login_required
 def list_view():
+    g.page = "stories_recent"
     return render_template('stories/story_recent.html', g=g)
 
 
@@ -134,6 +141,7 @@ def chapter_json(story_slug, category_slug):
 def search_az_view(letter: str = ''):
     if len(letter) > 1:
         return abort(400)
+    g.page = 'stories_az'
     if letter == '':
         return render_template('story_az_start.html', g=g)
     else:
