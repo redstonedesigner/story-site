@@ -82,7 +82,10 @@ def single_json(url_slug):
             })
         story['chapters'] = chapters
     else:
-        story_content = s.chapters[0].content
+        try:
+            story_content = s.chapters[0].content
+        except IndexError:
+            story_content = "This story has not been fully created yet.  Please check back soon."
         story['content'] = story_content
     return jsonify(story)
 
