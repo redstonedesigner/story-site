@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Toastr -->
+  <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/dist/css/adminlte.min.css">
 </head>
@@ -80,23 +82,21 @@
   </div>
   <!-- /.content-wrapper -->
 
-    <div class="modal fade" id="adjust-role-modal">
-        <div class="modal-dialog">
+    <div class="modal fade" id="confirmDeleteModal">
+        <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Delete Story</h4>
             </div>
             <div class="modal-body">
                 <p id="deleteConfirmationPreamble"></p>
-              <form id="deleteStoryConfirmation">
 				<div class="form-group">
                         <label for="storyName">Story Name</label>
-                        <input id="storyName" type="text" class="form-control" placeholder="Enter your password">
+                        <input id="storyName" type="text" class="form-control">
                       </div>
-			  </form>
             </div>
             <div class="modal-footer">
-              <button id="confirmDeleteButton" type="button" class="btn btn-danger btn-block">Edit</button>
+              <button id="confirmDeleteButton" type="button" class="btn btn-danger btn-block">Delete</button>
             </div>
           </div>
           <!-- /.modal-content -->
@@ -113,6 +113,8 @@
 <script src="/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
 <!-- DataTables  & Plugins -->
 <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -126,11 +128,9 @@
 <script>
     function refresh() {
         $.get("/authors/{{ g.user.username }}/stories-json", function(data) {
-            console.log(data)
 			const selector = $('#stories');
 			let html_string = ""
             const stories = data['stories']
-            console.log(stories)
 			for (const jsonDataKey in stories) {
 				const story = stories[jsonDataKey]
                 if(story['is_multi_chapter'] === false) {
@@ -149,30 +149,60 @@
                 <td>
 <a href="/stories/${story['url_slug']}" class="btn btn-xs btn-success"><i class="fas fa-eye"></i></a>
 <a href="/authors/edit/${story['url_slug']}" class="btn btn-xs btn-warning"><i class="fas fa-pencil-alt"></i></a>
-<button onclick="delete_story(${story['url_slug']})" class="btn btn-xs btn-danger"><i class="fas fa-recycle"></i></button>
+<button onclick="delete_story('${story['url_slug']}')" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
                 </td>
                 </tr>
 				`
 			}
+			if(html_string === "") {
+			    html_string = "<tr><td colspan=4 style='text-align: center'>No stories found.</td></tr>"
+            }
             selector.html(html_string)
-            $(".table").DataTable({
+		})
+        return "Complete"
+    }
+    function delete_story(url_slug) {
+        $.get({
+            url: `/stories/${url_slug}-json`,
+            success: function (data) {
+                $('#deleteConfirmationPreamble').html(
+                    `Are you sure you wish to delete ${data['title']}?  This action <strong>CANNOT</strong> be undone.<br>
+                    If you are sure, please enter "${data['title']}" in the box below.`
+                )
+                $('#confirmDeleteButton').attr('onclick', `confirm_delete_story('${data['title']}', '${data['url_slug']}')`)
+                $('#confirmDeleteModal').modal('show')
+            }
+        })
+    }
+    function confirm_delete_story(title, url_slug) {
+        input = $('#storyName').val()
+        if(input === title) {
+            $.ajax({
+                method: "DELETE",
+                url: `/authors/edit/${url_slug}`,
+                success: function (data) {
+                    toastr.success("Story deleted successfully!")
+                    $('#confirmDeleteModal').modal('hide')
+                    $('#storyName').val('')
+                    refresh()
+                }
+            })
+        } else {
+            toastr.error("Incorrect story name entered!")
+            return false
+        }
+    }
+	$(window).on('load', function() {
+		refresh()
+        $(".table").DataTable({
                 "responsive": true,
                 "lengthChange": false,
                 "autoWidth": false,
                 "bSort": false,
                 "pageLength": 20
             })
-		})
-        return "Complete"
-    }
-    function delete_story(url_slug) {
-        $.get({
-            
-        })
-    }
-	$(window).on('load', function() {
-		refresh()
         $('div').remove('.overlay')
+
     })
 </script>
 </body>

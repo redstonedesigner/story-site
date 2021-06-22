@@ -110,6 +110,27 @@ def author_edit_story_process(url_slug):
     return jsonify(success=True)
 
 
+@author_bp.route('/edit/<string:url_slug>', methods=['DELETE'])
+@login_required
+def author_story_delete_process(url_slug):
+    s = Story.query.filter(Story.url_slug == url_slug).first()
+    if s is None:
+        return abort(404)
+
+    if g.user.role == 0 and g.user.id != s.author_id:
+        return abort(500)
+
+    for i in s.get_category_relations():
+        c = Category.query.filter(Category.url_slug == i['slug']).first()
+        sc = StoryCategory.query.filter(StoryCategory.category_id == c.id and StoryCategory.story_id == s.id).first()
+        db_session.delete(sc)
+    for i in s.chapters:
+        db_session.delete(i)
+    db_session.delete(s)
+    db_session.commit()
+    return jsonify(success=True)
+
+
 @author_bp.route('/new/<string:url_slug>')
 @login_required
 def author_new_chapter_view(url_slug):
