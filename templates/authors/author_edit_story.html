@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "template/pace.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | Edit Story</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/plugins/select2/css/select2.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition dark-mode sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Edit Existing Story</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/authors/">Author Area</a></li>
+                <li class="breadcrumb-item active">Edit Story</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Story Details</h3>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal" id="newStoryForm">
+                <div class="form-group row">
+                    <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputTitle" placeholder="Title" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputDescription" placeholder="Description" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputCategories" class="col-sm-2 col-form-label">Categories</label>
+                    <div class="col-sm-10">
+                        <select id="inputCategories" multiple="multiple" style="width: 100%" placeholder="Select a category" required>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputMultipleChapters" class="col-sm-2 col-form-label">Chapter Mode</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="inputMultipleChapters" data-bootstrap-switch data-off-color="danger" data-on-color="success">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="offset-sm-2 col-sm-10">
+                        <button id="inputSubmit" type="submit" class="btn btn-default">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+<!-- Select2 -->
+<script src="/plugins/select2/js/select2.full.min.js"></script>
+<!-- Bootstrap Switch -->
+<script src="/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX script -->
+<script>
+    $(window).on('load', function () {
+        $.get({
+            url: "/stories/{{ slug }}-json",
+            success: function(data2) {
+                const selected_categories = data2['categories']
+                let selected_slugs = []
+                for (const selectedCategoriesKey in selected_categories) {
+                    selected_slugs.push(selected_categories[selectedCategoriesKey]['slug'])
+                }
+                $.get({
+                    url: "/categories/all",
+                    success: function (data) {
+                        const categories = data['categories']
+                        for (const categoriesKey in categories) {
+                            if($.inArray(categories[categoriesKey]['url_slug'], selected_slugs)) {
+                                $('#inputCategories').append(`<option value='${categories[categoriesKey]['id']}'>${categories[categoriesKey]['name']}`)
+                            } else {
+                                $('#inputCategories').append(`<option value='${categories[categoriesKey]['id']}' selected='selected'>${categories[categoriesKey]['name']}`)
+                            }
+                        }
+                    }
+                })
+                $('#inputCategories').select2()
+                if(data2['has_chapters']) {
+                    $('#inputMultipleChapters').attr("checked", true)
+                } else {
+                    $('#inputMultipleChapters').attr("checked", false)
+                }
+                $('#inputMultipleChapters').bootstrapSwitch('state', $('#inputMultipleChapters').prop('checked'))
+                $('#inputTitle').val(data2['title'])
+                $('#inputDescription').val(data2['description'])
+                $('#newStoryForm').submit(function createStory() {
+                try {
+                    let raw_categories = $('#inputCategories').select2('data')
+                    let categories = []
+                    for (const categoriesKey in raw_categories) {
+                        categories.push(raw_categories[categoriesKey]['id'])
+                    }
+                    $.ajax({
+                        type: "PATCH",
+                        url: '/authors/edit/{{ slug }}',
+                        data: {
+                            title: $('#inputTitle').val(),
+                            description: $('#inputDescription').val(),
+                            categories: categories,
+                            multiple_chapters: $('#inputMultipleChapters').prop('checked')
+                        },
+                        success: function (data) {
+                            window.location.replace('/authors/')
+                        }
+                    })
+                    return false
+                } catch (e) {
+                    console.log(e)
+                    return false
+                }
+            })
+        }})
+    })
+</script>
+</body>
+</html>

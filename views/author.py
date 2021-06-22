@@ -76,7 +76,38 @@ def author_new_story_action():
 @author_bp.route('/edit/<string:url_slug>')
 @login_required
 def author_edit_story_view(url_slug):
-    return render_template('author_edit_story.html', g=g)
+    return render_template('author_edit_story.html', g=g, slug=url_slug)
+
+
+@author_bp.route('/edit/<string:url_slug>', methods=['PATCH'])
+@login_required
+def author_edit_story_process(url_slug):
+    s: Story = Story.query.filter(Story.url_slug == url_slug).first()
+    if s is None:
+        return abort(404)
+
+    form = request.form
+    categories = form.getlist('categories[]', int)
+    title = form.get('title')
+    description = form.get('description')
+    if form.get('multiple_chapters') == 'true':
+        multiple_chapters = True
+    else:
+        multiple_chapters = False
+
+    s.title = title
+    s.description = description
+    s.multiple_chapters = multiple_chapters
+    current_cats = s.get_category_relations()
+    for i in current_cats:
+        c = Category.query.filter(Category.url_slug == i['slug']).first()
+        sc = StoryCategory.query.filter(StoryCategory.category_id == c.id and StoryCategory.story_id == s.id).first()
+        db_session.delete(sc)
+    for i in categories:
+        sc = StoryCategory(story_id=s.id, category_id=i)
+        db_session.add(sc)
+    db_session.commit()
+    return jsonify(success=True)
 
 
 @author_bp.route('/new/<string:url_slug>')

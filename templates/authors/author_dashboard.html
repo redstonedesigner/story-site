@@ -4,7 +4,7 @@
     {% include "template/pace.html" %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Story Site | User List</title>
+  <title>Story Site | Author Dashboard</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -80,6 +80,31 @@
   </div>
   <!-- /.content-wrapper -->
 
+    <div class="modal fade" id="adjust-role-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Delete Story</h4>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmationPreamble"></p>
+              <form id="deleteStoryConfirmation">
+				<div class="form-group">
+                        <label for="storyName">Story Name</label>
+                        <input id="storyName" type="text" class="form-control" placeholder="Enter your password">
+                      </div>
+			  </form>
+            </div>
+            <div class="modal-footer">
+              <button id="confirmDeleteButton" type="button" class="btn btn-danger btn-block">Edit</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+
   {% include "template/footer.html" %}
 </div>
 <!-- ./wrapper -->
@@ -124,6 +149,7 @@
                 <td>
 <a href="/stories/${story['url_slug']}" class="btn btn-xs btn-success"><i class="fas fa-eye"></i></a>
 <a href="/authors/edit/${story['url_slug']}" class="btn btn-xs btn-warning"><i class="fas fa-pencil-alt"></i></a>
+<button onclick="delete(${story['url_slug']})" class="btn btn-xs btn-danger"><i class="fas fa-recycle"></i></button>
                 </td>
                 </tr>
 				`
