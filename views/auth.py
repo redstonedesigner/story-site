@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, g, session, request, redirect, escape
 from flask.json import dumps
-from models import User
+from models import User, UserProfile
 import hashlib
 from checks import no_login_required
 from database import db_session
@@ -84,6 +84,9 @@ def register_process():
     else:
         u = User(email=email, password=password, username=username)
         db_session.add(u)
+        db_session.commit()
+        up = UserProfile(u.id)
+        db_session.add(up)
         db_session.commit()
         return '{"success": "true"}'
 

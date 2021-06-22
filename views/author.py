@@ -25,6 +25,28 @@ def author_dashboard_view():
     return render_template('author_dashboard.html', g=g)
 
 
+@author_bp.route('/<string:username>/stories-json')
+@login_required
+def author_story_list_process(username: str):
+    u: User = User.query.filter(User.username == username).first()
+    if u is None:
+        return jsonify(success=False, error=404), 404
+    stories = Story.query.filter(Story.author_id == u.id).all()
+    story_list = []
+    for story in stories:
+        categories: list[Category] = story.get_category_relations()
+        data = {
+            'title': story.title,
+            'description': story.description,
+            'categories': categories,
+            'url_slug': story.url_slug,
+            'chapters': len(story.chapters),
+            'is_multi_chapter': story.multiple_chapters
+        }
+        story_list.append(data)
+    return jsonify(stories=story_list)
+
+
 @author_bp.route('/new')
 @login_required
 def author_new_story_view():

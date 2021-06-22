@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "template/pace.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | User List</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition dark-mode sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Author Dashboard</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+				<li class="breadcrumb-item active">Authors</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Authored Stories</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 25%">Title</th>
+                        <th style="width: 30%">Chapters</th>
+                        <th style="width: 25%">Categories</th>
+                        <th style="width: 20%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="stories">
+
+                </tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+        <div class="overlay">
+            <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX Script -->
+<script>
+    function refresh() {
+        $.get("/authors/{{ g.user.username }}/stories-json", function(data) {
+            console.log(data)
+			const selector = $('#stories');
+			let html_string = ""
+            const stories = data['stories']
+            console.log(stories)
+			for (const jsonDataKey in stories) {
+				const story = stories[jsonDataKey]
+                if(story['is_multi_chapter'] === false) {
+                    chapter_string = "N/A"
+                } else {
+                    chapter_string = `${story['chapters']}`
+                }
+                let category_string = ""
+                for (const categoryDataKey in story['categories']) {
+                    category_string += `<a href='/categories/${story['categories'][categoryDataKey]['slug']}' title="${story['categories'][categoryDataKey]['name']}">${story['categories'][categoryDataKey]['slug']}</a> `
+                }
+				html_string += `<tr>
+                <td>${story['title']}</td>
+                <td>${chapter_string}</td>
+                <td>${category_string}</td>
+                <td>
+<a href="/stories/${story['url_slug']}" class="btn btn-xs btn-success"><i class="fas fa-eye"></i></a>
+<a href="/authors/edit/${story['url_slug']}" class="btn btn-xs btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                </td>
+                </tr>
+				`
+			}
+            selector.html(html_string)
+            $(".table").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "bSort": false,
+                "pageLength": 20
+            })
+		})
+        return "Complete"
+    }
+	$(window).on('load', function() {
+		refresh()
+        $('div').remove('.overlay')
+    })
+</script>
+</body>
+</html>
