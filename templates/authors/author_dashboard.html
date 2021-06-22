@@ -149,7 +149,7 @@
                 <td>
 <a href="/stories/${story['url_slug']}" class="btn btn-xs btn-success"><i class="fas fa-eye"></i></a>
 <a href="/authors/edit/${story['url_slug']}" class="btn btn-xs btn-warning"><i class="fas fa-pencil-alt"></i></a>
-<button onclick="delete(${story['url_slug']})" class="btn btn-xs btn-danger"><i class="fas fa-recycle"></i></button>
+<button onclick="delete_story(${story['url_slug']})" class="btn btn-xs btn-danger"><i class="fas fa-recycle"></i></button>
                 </td>
                 </tr>
 				`
@@ -164,6 +164,11 @@
             })
 		})
         return "Complete"
+    }
+    function delete_story(url_slug) {
+        $.get({
+            
+        })
     }
 	$(window).on('load', function() {
 		refresh()
