@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, g, jsonify, redirect, request, abo
 from models import Story, Category, User, Chapter, StoryCategory
 from checks import login_required
 from database import db_session
-import utils
 
 
 author_bp = Blueprint(
@@ -98,14 +97,32 @@ def author_edit_story_process(url_slug):
     s.title = title
     s.description = description
     s.multiple_chapters = multiple_chapters
-    current_cats = s.get_category_relations()
-    for i in current_cats:
-        c = Category.query.filter(Category.url_slug == i['slug']).first()
-        sc = StoryCategory.query.filter(StoryCategory.category_id == c.id and StoryCategory.story_id == s.id).first()
-        db_session.delete(sc)
+    db_session.commit()
+    for i in StoryCategory.query.filter(StoryCategory.story_id == s.id).all():
+        db_session.delete(i)
+        db_session.commit()
     for i in categories:
         sc = StoryCategory(story_id=s.id, category_id=i)
         db_session.add(sc)
+        db_session.commit()
+    return jsonify(success=True)
+
+
+@author_bp.route('/edit/<string:url_slug>/content', methods=['PATCH'])
+@login_required
+def author_edit_story_content_process(url_slug):
+    s: Story = Story.query.filter(Story.url_slug == url_slug).first()
+    if s is None:
+        return abort(404)
+
+    form = request.form
+    content = form.get('content')
+    print(content)
+    try:
+        s.chapters[0].content = content
+    except IndexError:
+        ch = Chapter(story_id=s.id, title=s.title, content=content)
+        db_session.add(ch)
     db_session.commit()
     return jsonify(success=True)
 

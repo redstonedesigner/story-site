@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
   <!-- Select2 -->
   <link rel="stylesheet" href="/plugins/select2/css/select2.min.css">
+    <!-- Toastr -->
+  <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
+      <!-- summernote -->
+  <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/dist/css/adminlte.min.css">
 </head>
@@ -104,14 +108,30 @@
 <script src="/plugins/select2/js/select2.full.min.js"></script>
 <!-- Bootstrap Switch -->
 <script src="/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<!-- Summernote -->
+<script src="/plugins/summernote/summernote-bs4.min.js"></script>
 <!-- AdminLTE App -->
 <script src="/dist/js/adminlte.min.js"></script>
 <!-- AJAX script -->
 <script>
+    function update_story_content(url_slug) {
+        $.ajax({
+            method: "PATCH",
+            url: `/authors/edit/${url_slug}/content`,
+            data: {
+                content: $('div[contenteditable=true][role=textbox]').html()
+            },
+            success: function (data) {
+                toastr.success("Content edited successfully.")
+            }
+        })
+    }
+
     $(window).on('load', function () {
         $.get({
             url: "/stories/{{ slug }}-json",
             success: function(data2) {
+                const has_chapters = data2['has_chapters']
                 const selected_categories = data2['categories']
                 let selected_slugs = []
                 for (const selectedCategoriesKey in selected_categories) {
@@ -131,10 +151,31 @@
                     }
                 })
                 $('#inputCategories').select2()
-                if(data2['has_chapters']) {
+                if(has_chapters) {
                     $('#inputMultipleChapters').attr("checked", true)
                 } else {
                     $('#inputMultipleChapters').attr("checked", false)
+                    $('.content').append(`<div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Story Content</h3>
+        </div>
+        <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <textarea id='inputContent'>${data2['content']}</textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="offset-sm-10 col-sm-2">
+                        <button id="inputSubmit" type="submit" class="btn btn-block btn-default" onclick="update_story_content('${data2['url_slug']}')">Submit</button>
+                    </div>
+                </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+                    `)
+                    $('#inputContent').summernote()
                 }
                 $('#inputMultipleChapters').bootstrapSwitch('state', $('#inputMultipleChapters').prop('checked'))
                 $('#inputTitle').val(data2['title'])
