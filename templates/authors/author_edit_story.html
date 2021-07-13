@@ -93,7 +93,28 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
-
+<div class="modal fade" id="confirmDeleteModal">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Delete Chapter</h4>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmationPreamble"></p>
+				<div class="form-group">
+                        <label for="storyName">Chapter Title</label>
+                        <input id="storyName" type="text" class="form-control">
+                      </div>
+            </div>
+            <div class="modal-footer">
+              <button id="confirmDeleteButton" type="button" class="btn btn-danger btn-block">Delete</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
   {% include "template/footer.html" %}
 </div>
 <!-- ./wrapper -->
@@ -127,6 +148,39 @@
         })
     }
 
+    function delete_chapter(url_slug) {
+        $.get({
+            url: `/stories/${url_slug}-json`,
+            success: function (data) {
+                const title = data['chapter']['title']
+                $('#deleteConfirmationPreamble').html(
+                    `Are you sure you wish to delete ${title}?  This action <strong>CANNOT</strong> be undone.<br>
+                    If you are sure, please enter "${title}" in the box below.`
+                )
+                $('#confirmDeleteButton').attr('onclick', `confirm_delete_chapter('${title}', '${url_slug}')`)
+                $('#confirmDeleteModal').modal('show')
+            }
+        })
+    }
+    function confirm_delete_chapter(title, url_slug) {
+        input = $('#storyName').val()
+        if(input === title) {
+            $.ajax({
+                method: "DELETE",
+                url: `/authors/edit/${url_slug}`,
+                success: function (data) {
+                    toastr.success("Story deleted successfully!")
+                    $('#confirmDeleteModal').modal('hide')
+                    $('#storyName').val('')
+                    window.location.reload()
+                }
+            })
+        } else {
+            toastr.error("Incorrect story name entered!")
+            return false
+        }
+    }
+
     $(window).on('load', function () {
         $.get({
             url: "/stories/{{ slug }}-json",
@@ -153,6 +207,48 @@
                 $('#inputCategories').select2()
                 if(has_chapters) {
                     $('#inputMultipleChapters').attr("checked", true)
+                    let chapters_html = ``
+                    const chapters = data2['chapters']
+                    for (const chaptersKey in chapters) {
+                        const chapter = chapters[chaptersKey]
+                        const chapter_html = `<tr>
+    <td>${chapter['title']}</td>
+    <td>${chapter['created_at']}</td>
+    <td>${chapter['modified_at']}</td>
+    <td>
+    <a href="/stories/${data2['url_slug']}/${chapter['url_slug']}" class="btn btn-xs btn-success"><i class="fas fa-eye"></i></a>
+    <a href="/authors/edit/${data2['url_slug']}/${chapter['url_slug']}" class="btn btn-xs btn-warning"><i class="fas fa-pencil-alt"></i></a>
+    <button onclick="delete_chapter('${data2['url_slug']}/${chapter['url_slug']}')" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
+    </td>
+    </tr>`
+                        chapters_html += chapter_html
+                    }
+                    story_html = `<div class="row">
+<div class="col-md-12">
+<div class="card card-default">
+<div class="card-header">
+<h3 class="card-title">Chapters</h3>
+<div class="card-tools">
+<a href='/authors/new/${data2['url_slug']}' class="btn btn-tool"><i class="fas fa-plus"></i></a>
+<button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse"><i class="fas fa-minus"></i></button>
+</div>
+</div>
+<div class="card-body p-0">
+<table class="table table-hover">
+<thead>
+<th>Title</th>
+<th>Created</th>
+<th>Last Modified</th>
+<th>Actions</th>
+</thead>
+<tbody>
+${chapters_html}
+</tbody>
+</table>
+</div>
+</div>
+</div>`
+                    $('.content').append(story_html)
                 } else {
                     $('#inputMultipleChapters').attr("checked", false)
                     $('.content').append(`<div class="card">

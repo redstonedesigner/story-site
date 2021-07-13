@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "template/pace.html" %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Story Site | New Chapter</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition dark-mode sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+    {% include "template/nav.html" with context %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Edit Existing Chapter</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+				<li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/authors/">Author Area</a></li>
+                <li class="breadcrumb-item"><a href="/authors/{{ s.url_slug }}">{{ s.title }}</a></li>
+                <li class="breadcrumb-item active">Edit Chapter</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Edit Chapter</h3>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal" id="newStoryForm">
+                <div class="form-group row">
+                    <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputTitle" placeholder="Title" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputSummernote" class="col-sm-2 col-form-label">Chapter Content</label>
+                    <div class="col-sm-10" id="inputSummernoteContainer">
+
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="offset-sm-2 col-sm-10">
+                        <button id="inputSubmit" type="submit" class="btn btn-default">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% include "template/footer.html" %}
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Summernote -->
+<script src="/plugins/summernote/summernote-bs4.min.js"></script>
+<!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+<!-- AJAX script -->
+<script>
+    $(window).on('load', function () {
+        $.get({
+            url: "/stories/{{ s.url_slug }}/{{ c.url_slug }}-json",
+            success: function (data) {
+                $('#inputTitle').val(data['chapter']['title'])
+                $('#inputSummernoteContainer').append(`<textarea id="inputSummernote">${data['chapter']['content']}</textarea>`)
+                $('#inputSummernote').summernote()
+            }
+        })
+    })
+    $('#newStoryForm').submit(function createChapter() {
+        try {
+            $.ajax({
+                type: "PATCH",
+                url: '/authors/edit/{{ s.url_slug }}/{{ c.url_slug }}',
+                data: {
+                    title: $('#inputTitle').val(),
+                    content: $('#inputSummernote').val(),
+                },
+                success: function (data) {
+                    window.location.replace(`/authors/edit/{{ s.url_slug }}`)
+                }
+            })
+            return false
+        } catch (e) {
+            console.log(e)
+            return false
+        }
+    })
+</script>
+</body>
+</html>

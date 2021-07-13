@@ -179,4 +179,36 @@ def author_new_chapter_action(url_slug):
 @author_bp.route('/edit/<string:story_slug>/<string:chapter_slug>')
 @login_required
 def author_edit_chapter_view(story_slug, chapter_slug):
-    return render_template('author_edit_chapter.html', g=g)
+    story = Story.query.filter(Story.url_slug == story_slug).first()
+    chapter = Chapter.query.filter(Chapter.url_slug == chapter_slug).first()
+    if story is None or chapter is None:
+        abort(404)
+    return render_template('author_edit_chapter.html', g=g, s=story, c=chapter)
+
+
+@author_bp.route('/edit/<string:story_slug>/<string:chapter_slug>', methods=['PATCH'])
+@login_required
+def author_edit_chapter_process(story_slug, chapter_slug):
+    story = Story.query.filter(Story.url_slug == story_slug).first()
+    chapter = Chapter.query.filter(Chapter.url_slug == chapter_slug).first()
+    if story is None or chapter is None:
+        abort(404)
+    form = request.form
+    title = form.get('title')
+    content = form.get('content')
+    chapter.title = title
+    chapter.content = content
+    db_session.commit()
+    return jsonify(success=True)
+
+
+@author_bp.route('/edit/<string:story_slug>/<string:chapter_slug>', methods=['DELETE'])
+@login_required
+def author_delete_chapter_process(story_slug, chapter_slug):
+    story = Story.query.filter(Story.url_slug == story_slug).first()
+    chapter = Chapter.query.filter(Chapter.url_slug == chapter_slug).first()
+    if story is None or chapter is None:
+        abort(404)
+    db_session.delete(chapter)
+    db_session.commit()
+    return jsonify(success=True)
